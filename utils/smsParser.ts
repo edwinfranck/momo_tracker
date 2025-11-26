@@ -12,10 +12,24 @@ function extractPhone(text: string): string | undefined {
 }
 
 function extractAmount(text: string): number {
-  const amountMatch = text.match(/(\d+(?:,\d+)?(?:\.\d+)?)F/);
+  // Format standard: 4000F
+  let amountMatch = text.match(/(\d+(?:,\d+)?(?:\.\d+)?)F/);
   if (amountMatch) {
     return parseFloat(amountMatch[1].replace(',', ''));
   }
+
+  // Format avec espace: 5000 FCFA
+  amountMatch = text.match(/(\d+(?:,\d+)?(?:\.\d+)?)\s*FCFA/i);
+  if (amountMatch) {
+    return parseFloat(amountMatch[1].replace(',', ''));
+  }
+
+  // Format XOF: XOF 10000
+  amountMatch = text.match(/XOF\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
+  if (amountMatch) {
+    return parseFloat(amountMatch[1].replace(',', ''));
+  }
+
   return 0;
 }
 
@@ -28,14 +42,22 @@ function extractFee(text: string): number {
 }
 
 function extractBalance(text: string): number {
-  const balanceMatch = text.match(/Solde:\s*(\d+(?:,\d+)?(?:\.\d+)?)F/i);
+  // Format standard: Solde:10000F
+  let balanceMatch = text.match(/Solde:\s*(\d+(?:,\d+)?(?:\.\d+)?)F/i);
   if (balanceMatch) {
     return parseFloat(balanceMatch[1].replace(',', ''));
   }
+
+  // Format GAB: SOLDE DISPO 48635
+  balanceMatch = text.match(/SOLDE(?:\s+DISPO)?\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
+  if (balanceMatch) {
+    return parseFloat(balanceMatch[1].replace(',', ''));
+  }
+
   return 0;
 }
 
-function extractDate(text: string): Date {
+function extractDate(text: string): Date | null {
   const dateMatch = text.match(/(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/);
   if (dateMatch) {
     return new Date(dateMatch[1]);
@@ -46,12 +68,12 @@ function extractDate(text: string): Date {
     return new Date(dateMatch2[1]);
   }
 
-  return new Date();
+  return null;
 }
 
-function extractTransactionId(text: string): string {
+function extractTransactionId(text: string): string | null {
   const idMatch = text.match(/ID[:\s]*(\d+)/i);
-  return idMatch ? idMatch[1] : Date.now().toString();
+  return idMatch ? idMatch[1] : null;
 }
 
 function extractReference(text: string): string | undefined {
@@ -60,9 +82,20 @@ function extractReference(text: string): string | undefined {
 }
 
 function extractCounterparty(text: string, type: TransactionType): string {
+  // Cas spécifique RETRAIT GAB
+  if (type === "withdrawal" && text.toUpperCase().includes("RETRAIT GAB")) {
+    // Gère "EFFECTUE A" ou "EFECTUE A", suivi du lieu, jusqu'à "LE" ou ".SOLDE" ou fin de ligne
+    const gabMatch = text.match(/EF{1,2}ECTUE A\s+(.+?)(?:\s+LE|\.|\s+SOLDE|$)/i);
+    if (gabMatch) {
+      return gabMatch[1].trim();
+    }
+  }
+
   const patterns = [
     /(?:de|a|à)\s+([^(]+?)\s*\(/i,
     /(?:de|a|à)\s+([^(\d]+?)(?:\s+\d{4}-|\s+Frais:)/i,
+    // Fallback pour "Transfert effectué ... a ..." sans parenthèses
+    /\b(?:a|à)\s+([^.]+?)(?:\.|\s+ID:)/i,
   ];
 
   for (const pattern of patterns) {
@@ -111,6 +144,10 @@ function detectTransactionType(message: string): TransactionType | null {
   if (trimmedMessage.startsWith("transfert ")) {
     // "Transfert ... a ..." = envoyé
     if (lowerMessage.includes(" a ")) {
+      return "transfer_sent";
+    }
+    // "Transfert effectue..." = envoyé
+    if (lowerMessage.includes("transfert effectue")) {
       return "transfer_sent";
     }
     // "Transfert ... de ..." = reçu
@@ -162,7 +199,7 @@ function detectTransactionType(message: string): TransactionType | null {
 // Compteur global pour garantir l'unicité des IDs
 let transactionCounter = 0;
 
-export function parseMTNMoMoSMS(message: string): ParseResult {
+export function parseMTNMoMoSMS(message: string, timestamp?: number): ParseResult {
   try {
     const type = detectTransactionType(message);
 
@@ -176,7 +213,15 @@ export function parseMTNMoMoSMS(message: string): ParseResult {
     const amount = extractAmount(message);
     const fee = extractFee(message);
     const balance = extractBalance(message);
-    const date = extractDate(message);
+    let date = extractDate(message);
+
+    if (!date) {
+      if (timestamp) {
+        date = new Date(timestamp);
+      } else {
+        date = new Date();
+      }
+    }
     const transactionId = extractTransactionId(message);
     const reference = extractReference(message);
     const counterpartyPhone = extractPhone(message);
@@ -187,12 +232,18 @@ export function parseMTNMoMoSMS(message: string): ParseResult {
       return ((hash << 5) - hash) + char.charCodeAt(0);
     }, 0);
 
-    // Incrémenter le compteur et ajouter un nombre aléatoire pour garantir l'unicité absolue
-    transactionCounter++;
-    const randomSuffix = Math.floor(Math.random() * 1000000);
+    // Générer un ID unique et déterministe
+    // Si on a un ID de transaction, on l'utilise
+    // Sinon on utilise le hash du message + la date
+    let uniqueId: string;
+    if (transactionId && transactionId !== Date.now().toString()) {
+      uniqueId = transactionId;
+    } else {
+      uniqueId = `hash-${Math.abs(messageHash)}-${date.getTime()}`;
+    }
 
     const transaction: Transaction = {
-      id: `${transactionId}-${date.getTime()}-${Math.abs(messageHash)}-${transactionCounter}-${randomSuffix}`,
+      id: uniqueId,
       type,
       amount,
       fee,
@@ -201,7 +252,7 @@ export function parseMTNMoMoSMS(message: string): ParseResult {
       counterpartyPhone,
       date,
       reference,
-      transactionId,
+      transactionId: transactionId || "UNKNOWN",
       rawMessage: message,
     };
 

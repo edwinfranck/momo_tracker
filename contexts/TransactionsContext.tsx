@@ -1,4 +1,5 @@
 import { Transaction, TransactionStats, TransactionType } from "@/types/transaction";
+import { SMSMessage } from "@/utils/smsReader";
 import { parseMTNMoMoSMS } from "@/utils/smsParser";
 import createContextHook from "@nkzw/create-context-hook";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -61,38 +62,48 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
 
   const addMultipleTransactions = (newTransactions: Transaction[]) => {
     console.log("Adding multiple transactions:", newTransactions.length);
-    
+
     const existingIds = new Set(transactions.map((t) => t.id));
     const uniqueTransactions = newTransactions.filter(
       (t) => !existingIds.has(t.id)
     );
-    
+
     if (uniqueTransactions.length === 0) {
       console.log("No new transactions to add");
       return 0;
     }
-    
+
     const updated = [...uniqueTransactions, ...transactions].sort(
       (a, b) => b.date.getTime() - a.date.getTime()
     );
-    
+
     setTransactions(updated);
     saveMutation.mutate(updated);
-    
+
     return uniqueTransactions.length;
   };
 
-  const parseSMSMessages = (messages: string[]): number => {
+  const parseSMSMessages = (messages: (string | SMSMessage)[]): number => {
     console.log("Parsing SMS messages:", messages.length);
     const parsed: Transaction[] = [];
-    
+
     for (const message of messages) {
-      const result = parseMTNMoMoSMS(message);
+      let body: string;
+      let timestamp: number | undefined;
+
+      if (typeof message === 'string') {
+        body = message;
+      } else {
+        body = message.body;
+        timestamp = message.date;
+      }
+
+      const result = parseMTNMoMoSMS(body, timestamp);
       if (result.success && result.transaction) {
         parsed.push(result.transaction);
       }
     }
-    
+
     return addMultipleTransactions(parsed);
   };
 

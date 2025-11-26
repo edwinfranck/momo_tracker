@@ -46,10 +46,10 @@ export default function SettingsScreen() {
       setIsSyncing(true);
 
       // Importer dynamiquement le module de lecture SMS (uniquement sur Android)
-      const { readMTNMoMoSMSBodies } = await import("@/utils/smsReader");
+      const { readMTNMoMoSMS } = await import("@/utils/smsReader");
 
-      // Lire les SMS MTN MoMo des 90 derniers jours (max 200 SMS)
-      const smsMessages = await readMTNMoMoSMSBodies(200, 90);
+      // Lire les SMS MTN MoMo des 600 derniers jours (max 5000 SMS) pour couvrir depuis Juillet 2024
+      const smsMessages = await readMTNMoMoSMS(5000, 600);
 
       if (smsMessages.length === 0) {
         Alert.alert(

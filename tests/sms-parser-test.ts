@@ -76,6 +76,16 @@ const testSMS = [
         expectedType: "uemoa_sent",
         description: "Transfert UEMOA envoyé"
     },
+    {
+        message: "Transfert effectue pour 5000 FCFA a 22997000000. ID: 1234567890. Solde: 10000 FCFA. Frais: 0 FCFA.",
+        expectedType: "transfer_sent",
+        description: "Transfert effectué (nouveau format)"
+    },
+    {
+        message: "RETRAIT GAB XOF 10000 EFFECTUE A GAB_UBA_COTONOU LE 2025-11-26 10:00:00. ID: 9876543210. SOLDE: 50000.",
+        expectedType: "withdrawal",
+        description: "Retrait GAB XOF (nouveau format)"
+    },
     // Tests de messages INVALIDES (ne doivent PAS être détectés)
     {
         message: "Grace à ton paiement via MoMopay tu as gagné des points de fidélité",
