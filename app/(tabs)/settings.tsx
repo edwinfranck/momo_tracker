@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: Colors.light.cardBackground,
-    borderRadius: 12,
+    borderRadius: 1,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -271,6 +271,8 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: 15,
     color: Colors.light.textSecondary,
+    flex: 1,
+    flexWrap: "wrap",
   },
   infoValue: {
     fontSize: 15,
@@ -289,7 +291,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 1,
     marginTop: 12,
     gap: 8,
   },
@@ -314,12 +316,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: `${Colors.light.warning}20`,
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 1,
     marginTop: 12,
     gap: 8,
   },
   warningText: {
-    flex: 1,
+    //flex: 1,
     fontSize: 13,
     color: Colors.light.warning,
     lineHeight: 18,

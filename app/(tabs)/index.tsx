@@ -167,7 +167,7 @@ export default function DashboardScreen() {
                       style={{
                         width: 8,
                         height: 8,
-                        borderRadius: 4,
+                        borderRadius: 1,
                         backgroundColor: getTransactionColor(transaction.type),
                       }}
                     />
@@ -190,16 +190,16 @@ export default function DashboardScreen() {
                         {
                           color:
                             transaction.type === "transfer_received" ||
-                            transaction.type === "deposit" ||
-                            transaction.type === "uemoa_received"
+                              transaction.type === "deposit" ||
+                              transaction.type === "uemoa_received"
                               ? Colors.light.income
                               : Colors.light.expense,
                         },
                       ]}
                     >
                       {transaction.type === "transfer_received" ||
-                      transaction.type === "deposit" ||
-                      transaction.type === "uemoa_received"
+                        transaction.type === "deposit" ||
+                        transaction.type === "uemoa_received"
                         ? "+"
                         : "-"}
                       {formatCurrency(transaction.amount)}
@@ -225,15 +225,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   balanceCard: {
-    backgroundColor: Colors.light.tint,
+    backgroundColor: Colors.light.background,
     margin: 16,
     padding: 24,
-    borderRadius: 20,
+    borderRadius: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowRadius: 1,
+    elevation: 1,
   },
   balanceLabel: {
     fontSize: 14,
@@ -272,12 +272,12 @@ const styles = StyleSheet.create({
     width: (width - 44) / 2,
     backgroundColor: Colors.light.cardBackground,
     padding: 16,
-    borderRadius: 16,
+    borderRadius: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   incomeCard: {
     borderLeftWidth: 4,
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.light.cardBackground,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   transactionIcon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 1,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,

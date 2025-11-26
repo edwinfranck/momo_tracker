@@ -8,15 +8,15 @@ export default {
     tabIconDefault: "#9CA3AF",
     tabIconSelected: "#FFCC00",
     border: "#E5E7EB",
-    
+
     success: "#10B981",
     error: "#EF4444",
     warning: "#F59E0B",
     info: "#3B82F6",
-    
+
     income: "#10B981",
     expense: "#EF4444",
-    
+
     categoryColors: {
       transfer_sent: "#F59E0B",
       transfer_received: "#10B981",

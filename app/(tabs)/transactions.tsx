@@ -1,21 +1,21 @@
 import Colors from "@/constants/colors";
 import { useTransactions } from "@/contexts/TransactionsContext";
 import {
-    Transaction,
-    TransactionCategories,
-    TransactionType,
-    TransactionTypeLabels,
+  Transaction,
+  TransactionCategories,
+  TransactionType,
+  TransactionTypeLabels,
 } from "@/types/transaction";
 import { Stack, useRouter } from "expo-router";
 import { Filter, Search } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -72,7 +72,7 @@ export default function TransactionsScreen() {
             style={{
               width: 10,
               height: 10,
-              borderRadius: 5,
+              borderRadius: 1,
               backgroundColor: getTransactionColor(item.type),
             }}
           />
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.light.background,
-    borderRadius: 12,
+    borderRadius: 1,
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 8,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   filterButton: {
     width: 48,
     height: 48,
-    borderRadius: 12,
+    borderRadius: 1,
     backgroundColor: Colors.light.background,
     alignItems: "center",
     justifyContent: "center",
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 1,
     backgroundColor: Colors.light.background,
     marginRight: 8,
   },
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.light.cardBackground,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 1,
     marginBottom: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   transactionIcon: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 1,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
