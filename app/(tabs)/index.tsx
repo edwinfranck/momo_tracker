@@ -49,15 +49,16 @@ export default function DashboardScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "MTN MoMo Tracker",
+          title: "Tableau de bord",
           headerStyle: {
-            backgroundColor: Colors.light.tint,
+            backgroundColor: Colors.light.background,
           },
           headerTintColor: Colors.light.text,
+          headerShadowVisible: false,
           headerTitleStyle: {
             fontWeight: "700" as const,
           },
@@ -218,7 +219,7 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.tint,
+    backgroundColor: Colors.light.background,
   },
   container: {
     flex: 1,
