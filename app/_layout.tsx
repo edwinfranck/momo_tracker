@@ -1,10 +1,14 @@
 import LockScreen from "@/components/LockScreen";
+import OnboardingScreen from "@/components/OnboardingScreen";
+import TermsAndConditions from "@/components/TermsAndConditions";
+import { OnboardingProvider, useOnboarding } from "@/contexts/OnboardingContext";
 import { SecurityProvider, useSecurity } from "@/contexts/SecurityContext";
 import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();
@@ -13,6 +17,30 @@ const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   const { isSecurityEnabled, isAuthenticated } = useSecurity();
+  const {
+    areTermsAccepted,
+    isOnboardingCompleted,
+    isLoading: onboardingLoading
+  } = useOnboarding();
+
+  // Show loading while checking onboarding status
+  if (onboardingLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  // Show Terms and Conditions if not accepted
+  if (!areTermsAccepted) {
+    return <TermsAndConditions />;
+  }
+
+  // Show Onboarding if not completed
+  if (!isOnboardingCompleted) {
+    return <OnboardingScreen />;
+  }
 
   // Show lock screen if security is enabled and not authenticated
   if (isSecurityEnabled && !isAuthenticated) {
@@ -40,13 +68,15 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SecurityProvider>
-        <TransactionsProvider>
-          <GestureHandlerRootView>
-            <RootLayoutNav />
-          </GestureHandlerRootView>
-        </TransactionsProvider>
-      </SecurityProvider>
+      <OnboardingProvider>
+        <SecurityProvider>
+          <TransactionsProvider>
+            <GestureHandlerRootView>
+              <RootLayoutNav />
+            </GestureHandlerRootView>
+          </TransactionsProvider>
+        </SecurityProvider>
+      </OnboardingProvider>
     </QueryClientProvider>
   );
 }
