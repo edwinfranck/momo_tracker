@@ -33,40 +33,43 @@ export default function OnboardingScreen() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
 
-    const slides: OnboardingSlide[] = useMemo(() => [
-        {
-            id: "1",
-            icon: <Smartphone size={80} color={colors.tint} />,
-            title: "Bienvenue sur MTN MoMo Tracker",
-            description:
-                "Suivez et gérez vos transactions Mobile Money facilement. Toutes vos données restent privées et sont stockées localement sur votre appareil.",
-            color: colors.tint,
-        },
-        {
-            id: "2",
-            icon: <TrendingUp size={80} color={colors.income} />,
-            title: "Analysez vos finances",
-            description:
-                "Visualisez vos dépenses et revenus avec des statistiques détaillées. Filtrez par période, montant ou type de transaction pour mieux comprendre vos habitudes financières.",
-            color: colors.income,
-        },
-        {
-            id: "3",
-            icon: <Lock size={80} color={colors.warning} />,
-            title: "Sécurité & Confidentialité",
-            description:
-                "Protégez vos données avec l'authentification biométrique ou code PIN. Masquez les montants pour plus de confidentialité. Vos SMS ne quittent jamais votre appareil.",
-            color: colors.warning,
-        },
-        {
-            id: "4",
-            icon: <CheckCircle size={80} color={colors.success} />,
-            title: "Tout est prêt !",
-            description:
-                "Synchronisez vos SMS MTN MoMo pour commencer. L'application lira uniquement les notifications de MTN Mobile Money, rien d'autre.",
-            color: colors.success,
-        },
-    ], [colors]);
+    const slides: OnboardingSlide[] = useMemo(() => 
+[
+  {
+    id: "1",
+    icon: <Smartphone size={80} color={colors.tint} />,
+    title: "Bienvenue dans ton DJAI Money Tracker",
+    description:
+      "Gère tes mouvements Mobile Money sans galère. Toutes tes données restent dans ton phone, y’a rien qui sort.",
+    color: colors.tint,
+  },
+  {
+    id: "2",
+    icon: <TrendingUp size={80} color={colors.income} />,
+    title: "Check ton Djai",
+    description:
+      "Vois comment tu dépenses et comment l'argent rentre. Tu peux filtrer par date, montant ou type de transaction pour mieux contrôler ton djai.",
+    color: colors.income,
+  },
+  {
+    id: "3",
+    icon: <Lock size={80} color={colors.warning} />,
+    title: "Sécurité béton",
+    description:
+      "Active ton empreinte ou ton code PIN pour verrouiller ton app. Tu peux cacher ton djai aussi. Tes SMS ne quittent jamais ton phone.",
+    color: colors.warning,
+  },
+  {
+    id: "4",
+    icon: <CheckCircle size={80} color={colors.success} />,
+    title: "C'est bon tu es chaud !",
+    description:
+      "Synchronise tes SMS MTN MoMo et on démarre. L'app lit seulement les messages Mobile Money, rien d'autre.",
+    color: colors.success,
+  },
+],
+
+    [colors]);
 
     const handleNext = () => {
         if (currentIndex < slides.length - 1) {

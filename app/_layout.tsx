@@ -26,6 +26,8 @@ function RootLayoutNav() {
     isLoading: onboardingLoading
   } = useOnboarding();
 
+   const { colors, activeColorScheme } = useTheme();
+
   // Show loading while checking onboarding status
   if (onboardingLoading) {
     return (
@@ -50,7 +52,7 @@ function RootLayoutNav() {
     return <LockScreen />;
   }
 
-  const { colors, activeColorScheme } = useTheme();
+ 
 
   return (
     <>

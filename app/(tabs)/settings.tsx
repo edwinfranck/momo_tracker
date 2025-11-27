@@ -424,7 +424,7 @@ export default function SettingsScreen() {
           <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
             <TouchableOpacity
               style={[styles.settingRow, { borderBottomColor: colors.border }]}
-              onPress={() => router.push("/term" as any)}
+              onPress={() => router.push("/terms" as any)}
             >
               <View style={styles.settingLeft}>
                 <View style={[styles.settingIconContainer, { backgroundColor: `${colors.tint}15` }]}>

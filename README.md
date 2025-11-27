@@ -48,3 +48,21 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+Android Bundled 63ms node_modules/expo-router/entry.js (1 module)
+ ERROR  expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/. 
+
+Code: notificationService.ts
+> 1 | import * as Notifications from 'expo-notifications';
+    | ^
+  2 | import { Platform } from 'react-native';
+  3 | import { Transaction } from '@/types/transaction';
+  4 |
+Call Stack
+  <global> (utils/notificationService.ts:1)
+  <global> (contexts/TransactionsContext.tsx:5)
+  <global> (app/(tabs)/index.tsx:3)
+ WARN  `expo-notifications` functionality is not fully supported in Expo Go:
+We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.
+

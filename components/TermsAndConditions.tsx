@@ -40,7 +40,7 @@ export default function TermsAndConditions({
                     </View>
                     <Text style={styles.title}>Conditions d'Utilisation</Text>
                     <Text style={styles.subtitle}>
-                        Politique de Confidentialité & Sécurité
+                        Politique de Confidentialité et Sécurité
                     </Text>
                 </View>
 
