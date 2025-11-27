@@ -9,38 +9,21 @@
 - ✅ Priorité haute pour apparition immédiate
 - ✅ Canal de notification configuré ("default" channel)
 
-### 2. 🔔 **Centre de Notifications In-App** (NOUVEAU)
-- ✅ **Icône Cloche** dans le header du tableau de bord
-- ✅ **Badge rouge** indiquant le nombre de notifications non lues
-- ✅ **Écran dédié** listant l'historique des notifications
-- ✅ **Navigation intelligente** : Clic sur notif -> Détails transaction
-- ✅ **Gestion complète** : Marquer comme lu, Tout marquer comme lu, Supprimer
-
-### 3. 🎧 **Listener SMS en Temps Réel**
+### 2. 🎧 **Listener SMS en Temps Réel**
 - ✅ Écoute automatique des SMS entrants
 - ✅ Filtrage intelligent des SMS MTN MoMo
 - ✅ Démarrage automatique au lancement de l'app
 - ✅ Nettoyage propre au démontage du composant
 - ✅ Détection de doublons avant ajout
 
-### 4. 🔄 **Synchronisation Automatique**
+### 3. 🔄 **Synchronisation Automatique**
 - ✅ Parsing automatique des nouveaux SMS
 - ✅ Sauvegarde instantanée dans la base de données
 - ✅ Mise à jour du solde en temps réel
-- ✅ Ajout simultané dans l'historique des notifications in-app
 - ✅ Aucune intervention manuelle requise
+- ✅ Le bouton manuel reste disponible pour l'historique
 
 ## 📁 Fichiers Créés
-
-### **`contexts/NotificationsContext.tsx`**
-- Gestion de l'état des notifications in-app
-- Persistance via AsyncStorage
-- Fonctions : add, markAsRead, delete, clearAll
-
-### **`app/notifications.tsx`**
-- Interface utilisateur pour la liste des notifications
-- Cartes de notification avec icônes et timestamps relatifs
-- Gestion des interactions (clic, suppression)
 
 ### **`utils/notificationService.ts`** (134 lignes)
 ```typescript

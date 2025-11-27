@@ -11,8 +11,7 @@ import {
   EyeOff,
   Shield,
   FileText,
-  ChevronRight,
-  Bell
+  ChevronRight
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -218,54 +217,35 @@ export default function SettingsScreen() {
 
           {/* Test Notification Button */}
           {Platform.OS === "android" && (
-            <View style={{ gap: 12 }}>
-              <TouchableOpacity
-                style={[styles.button, styles.testButton]}
-                onPress={async () => {
-                  try {
-                    const { showTransactionNotification } = await import("@/utils/notificationService");
-                    const testTransaction = {
-                      id: "test-" + Date.now(),
-                      type: "withdrawal" as const,
-                      amount: 5000,
-                      fee: 0,
-                      balance: 45000,
-                      counterparty: "Test ATM",
-                      date: new Date(),
-                      transactionId: "TEST123",
-                      rawMessage: "Test notification",
-                    };
-                    await showTransactionNotification(testTransaction);
-                    Alert.alert("Test envoyé", "Vérifiez votre barre de notification !");
-                  } catch (error) {
-                    console.error("Erreur test notification:", error);
-                    Alert.alert("Erreur", "Impossible d'afficher la notification de test");
-                  }
-                }}
-              >
-                <AlertCircle size={20} color={Colors.light.info} />
-                <Text style={styles.testButtonText}>
-                  Tester notif native
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.button, styles.testButton]}
-                onPress={async () => {
-                  // Ce test est un peu plus complexe car on a besoin du contexte
-                  // On va juste afficher une alerte pour dire d'utiliser le dashboard
-                  Alert.alert(
-                    "Test In-App",
-                    "Pour tester les notifications in-app, envoyez un SMS de test ou attendez une transaction réelle. Vous verrez la cloche sonner sur l'accueil !"
-                  );
-                }}
-              >
-                <Bell size={20} color={Colors.light.info} />
-                <Text style={styles.testButtonText}>
-                  Info notif in-app
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={[styles.button, styles.testButton]}
+              onPress={async () => {
+                try {
+                  const { showTransactionNotification } = await import("@/utils/notificationService");
+                  const testTransaction = {
+                    id: "test-" + Date.now(),
+                    type: "withdrawal" as const,
+                    amount: 5000,
+                    fee: 0,
+                    balance: 45000,
+                    counterparty: "Test ATM",
+                    date: new Date(),
+                    transactionId: "TEST123",
+                    rawMessage: "Test notification",
+                  };
+                  await showTransactionNotification(testTransaction);
+                  Alert.alert("Test envoyé", "Vérifiez votre barre de notification !");
+                } catch (error) {
+                  console.error("Erreur test notification:", error);
+                  Alert.alert("Erreur", "Impossible d'afficher la notification de test");
+                }
+              }}
+            >
+              <AlertCircle size={20} color={Colors.light.info} />
+              <Text style={styles.testButtonText}>
+                Tester la notification
+              </Text>
+            </TouchableOpacity>
           )}
         </View>
 
