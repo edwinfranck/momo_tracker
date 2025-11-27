@@ -1,5 +1,5 @@
 import Colors from "@/constants/colors";
-import { useTransactions } from "@/contexts/TransactionsContext";
+import { PeriodFilter, SortBy, useTransactions } from "@/contexts/TransactionsContext";
 import {
   Transaction,
   TransactionCategories,
@@ -7,7 +7,15 @@ import {
   TransactionTypeLabels,
 } from "@/types/transaction";
 import { Stack, useRouter } from "expo-router";
-import { Filter, Search } from "lucide-react-native";
+import {
+  Filter,
+  Search,
+  SlidersHorizontal,
+  Calendar,
+  DollarSign,
+  ArrowUpDown,
+  X
+} from "lucide-react-native";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -16,6 +24,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -26,9 +35,23 @@ export default function TransactionsScreen() {
     setSearchQuery,
     filterType,
     setFilterType,
+    // Advanced filters
+    periodFilter,
+    setPeriodFilter,
+    minAmount,
+    setMinAmount,
+    maxAmount,
+    setMaxAmount,
+    sortBy,
+    setSortBy,
   } = useTransactions();
   const router = useRouter();
   const [showFilters, setShowFilters] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Local state for amount filter inputs
+  const [minAmountInput, setMinAmountInput] = useState("");
+  const [maxAmountInput, setMaxAmountInput] = useState("");
 
   const formatCurrency = (amount: number) => {
     return `${amount.toLocaleString("fr-FR")} FCFA`;
@@ -48,6 +71,54 @@ export default function TransactionsScreen() {
     const colors = Colors.light.categoryColors as any;
     return colors[type] || Colors.light.info;
   };
+
+  // Period filter options
+  const periodFilterOptions: { value: PeriodFilter; label: string }[] = [
+    { value: "all", label: "Tout" },
+    { value: "today", label: "Aujourd'hui" },
+    { value: "7days", label: "7 jours" },
+    { value: "30days", label: "30 jours" },
+    { value: "3months", label: "3 mois" },
+    { value: "6months", label: "6 mois" },
+    { value: "1year", label: "1 an" },
+  ];
+
+  // Sort options
+  const sortOptions: { value: SortBy; label: string }[] = [
+    { value: "date_desc", label: "Date (récent → ancien)" },
+    { value: "date_asc", label: "Date (ancien → récent)" },
+    { value: "amount_desc", label: "Montant (décroissant)" },
+    { value: "amount_asc", label: "Montant (croissant)" },
+  ];
+
+  // Handle amount filter
+  const applyAmountFilter = () => {
+    const min = minAmountInput ? parseFloat(minAmountInput) : null;
+    const max = maxAmountInput ? parseFloat(maxAmountInput) : null;
+    setMinAmount(min);
+    setMaxAmount(max);
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setFilterType("all");
+    setPeriodFilter("all");
+    setMinAmount(null);
+    setMaxAmount(null);
+    setMinAmountInput("");
+    setMaxAmountInput("");
+    setSortBy("date_desc");
+    setSearchQuery("");
+  };
+
+  // Check if any advanced filter is active
+  const hasActiveFilters = periodFilter !== "all" ||
+    minAmount !== null ||
+    maxAmount !== null ||
+    sortBy !== "date_desc" ||
+    filterType !== "all" ||
+    searchQuery !== "";
+
 
   // Calculate totals based on filtered transactions
   const calculateTotals = () => {
@@ -207,6 +278,151 @@ export default function TransactionsScreen() {
               )}
               contentContainerStyle={styles.filtersContent}
             />
+          </View>
+        )}
+
+        {/* Advanced Filters Button */}
+        <View style={styles.advancedFiltersButtonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.advancedFiltersButton,
+              showAdvancedFilters && styles.advancedFiltersButtonActive,
+            ]}
+            onPress={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          >
+            <SlidersHorizontal size={18} color={Colors.light.text} />
+            <Text style={styles.advancedFiltersButtonText}>
+              Filtres avancés
+            </Text>
+            {hasActiveFilters && <View style={styles.activeFilterDot} />}
+          </TouchableOpacity>
+          {hasActiveFilters && (
+            <TouchableOpacity
+              style={styles.resetFiltersButton}
+              onPress={resetFilters}
+            >
+              <X size={16} color={Colors.light.error} />
+              <Text style={styles.resetFiltersText}>Réinitialiser</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Advanced Filters Panel */}
+        {showAdvancedFilters && (
+          <View style={styles.advancedFiltersPanel}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {/* Period Filter */}
+              <View style={styles.filterSection}>
+                <View style={styles.filterSectionHeader}>
+                  <Calendar size={18} color={Colors.light.tint} />
+                  <Text style={styles.filterSectionTitle}>Période</Text>
+                </View>
+                <View style={styles.filterOptionsGrid}>
+                  {periodFilterOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option.value}
+                      style={[
+                        styles.filterOptionChip,
+                        periodFilter === option.value &&
+                        styles.filterOptionChipActive,
+                      ]}
+                      onPress={() => setPeriodFilter(option.value)}
+                    >
+                      <Text
+                        style={[
+                          styles.filterOptionChipText,
+                          periodFilter === option.value &&
+                          styles.filterOptionChipTextActive,
+                        ]}
+                      >
+                        {option.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              {/* Amount Range Filter */}
+              <View style={styles.filterSection}>
+                <View style={styles.filterSectionHeader}>
+                  <DollarSign size={18} color={Colors.light.tint} />
+                  <Text style={styles.filterSectionTitle}>Montant</Text>
+                </View>
+                <View style={styles.amountFilterContainer}>
+                  <View style={styles.amountInputWrapper}>
+                    <Text style={styles.amountInputLabel}>Min (FCFA)</Text>
+                    <TextInput
+                      style={styles.amountInput}
+                      placeholder="0"
+                      placeholderTextColor={Colors.light.textSecondary}
+                      keyboardType="numeric"
+                      value={minAmountInput}
+                      onChangeText={setMinAmountInput}
+                      onBlur={applyAmountFilter}
+                    />
+                  </View>
+                  <Text style={styles.amountSeparator}>—</Text>
+                  <View style={styles.amountInputWrapper}>
+                    <Text style={styles.amountInputLabel}>Max (FCFA)</Text>
+                    <TextInput
+                      style={styles.amountInput}
+                      placeholder="∞"
+                      placeholderTextColor={Colors.light.textSecondary}
+                      keyboardType="numeric"
+                      value={maxAmountInput}
+                      onChangeText={setMaxAmountInput}
+                      onBlur={applyAmountFilter}
+                    />
+                  </View>
+                </View>
+                {(minAmount !== null || maxAmount !== null) && (
+                  <Text style={styles.filterActiveText}>
+                    Filtre actif: {minAmount ?? 0} - {maxAmount ?? "∞"} FCFA
+                  </Text>
+                )}
+              </View>
+
+              {/* Sort Options */}
+              <View style={styles.filterSection}>
+                <View style={styles.filterSectionHeader}>
+                  <ArrowUpDown size={18} color={Colors.light.tint} />
+                  <Text style={styles.filterSectionTitle}>Trier par</Text>
+                </View>
+                <View style={styles.sortOptionsContainer}>
+                  {sortOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option.value}
+                      style={[
+                        styles.sortOption,
+                        sortBy === option.value && styles.sortOptionActive,
+                      ]}
+                      onPress={() => setSortBy(option.value)}
+                    >
+                      <View
+                        style={[
+                          styles.sortOptionRadio,
+                          sortBy === option.value &&
+                          styles.sortOptionRadioActive,
+                        ]}
+                      >
+                        {sortBy === option.value && (
+                          <View style={styles.sortOptionRadioDot} />
+                        )}
+                      </View>
+                      <Text
+                        style={[
+                          styles.sortOptionText,
+                          sortBy === option.value &&
+                          styles.sortOptionTextActive,
+                        ]}
+                      >
+                        {option.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            </ScrollView>
           </View>
         )}
 
@@ -504,5 +720,185 @@ const styles = StyleSheet.create({
   netBalanceValue: {
     fontSize: 18,
     fontWeight: "700" as const,
+  },
+  // Advanced Filters Styles
+  advancedFiltersButtonContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+    backgroundColor: Colors.light.cardBackground,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+  },
+  advancedFiltersButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.light.background,
+    gap: 8,
+  },
+  advancedFiltersButtonActive: {
+    backgroundColor: `${Colors.light.tint}20`,
+    borderWidth: 1,
+    borderColor: Colors.light.tint,
+  },
+  advancedFiltersButtonText: {
+    fontSize: 14,
+    fontWeight: "600" as const,
+    color: Colors.light.text,
+  },
+  activeFilterDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.light.tint,
+  },
+  resetFiltersButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: `${Colors.light.error}15`,
+    gap: 6,
+  },
+  resetFiltersText: {
+    fontSize: 13,
+    fontWeight: "600" as const,
+    color: Colors.light.error,
+  },
+  advancedFiltersPanel: {
+    backgroundColor: Colors.light.background,
+    maxHeight: 400,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+  },
+  filterSection: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+  },
+  filterSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 12,
+  },
+  filterSectionTitle: {
+    fontSize: 15,
+    fontWeight: "600" as const,
+    color: Colors.light.text,
+  },
+  filterOptionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  filterOptionChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+    backgroundColor: Colors.light.cardBackground,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+  },
+  filterOptionChipActive: {
+    backgroundColor: Colors.light.tint,
+    borderColor: Colors.light.tint,
+  },
+  filterOptionChipText: {
+    fontSize: 13,
+    fontWeight: "500" as const,
+    color: Colors.light.text,
+  },
+  filterOptionChipTextActive: {
+    color: Colors.light.cardBackground,
+    fontWeight: "600" as const,
+  },
+  amountFilterContainer: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 12,
+  },
+  amountInputWrapper: {
+    flex: 1,
+  },
+  amountInputLabel: {
+    fontSize: 12,
+    fontWeight: "500" as const,
+    color: Colors.light.textSecondary,
+    marginBottom: 6,
+  },
+  amountInput: {
+    backgroundColor: Colors.light.cardBackground,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: Colors.light.text,
+  },
+  amountSeparator: {
+    fontSize: 16,
+    fontWeight: "600" as const,
+    color: Colors.light.textSecondary,
+    paddingBottom: 10,
+  },
+  filterActiveText: {
+    fontSize: 11,
+    color: Colors.light.tint,
+    marginTop: 8,
+    fontWeight: "500" as const,
+  },
+  sortOptionsContainer: {
+    gap: 8,
+  },
+  sortOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: Colors.light.cardBackground,
+    gap: 12,
+  },
+  sortOptionActive: {
+    backgroundColor: `${Colors.light.tint}10`,
+    borderWidth: 1,
+    borderColor: Colors.light.tint,
+  },
+  sortOptionRadio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sortOptionRadioActive: {
+    borderColor: Colors.light.tint,
+  },
+  sortOptionRadioDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: Colors.light.tint,
+  },
+  sortOptionText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "500" as const,
+    color: Colors.light.text,
+  },
+  sortOptionTextActive: {
+    fontWeight: "600" as const,
+    color: Colors.light.tint,
   },
 });

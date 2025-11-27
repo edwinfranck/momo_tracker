@@ -33,10 +33,19 @@ async function saveTransactions(transactions: Transaction[]): Promise<void> {
   }
 }
 
+export type PeriodFilter = "all" | "today" | "7days" | "30days" | "3months" | "6months" | "1year";
+export type SortBy = "date_desc" | "date_asc" | "amount_desc" | "amount_asc";
+
 export const [TransactionsProvider, useTransactions] = createContextHook(() => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<TransactionType | "all">("all");
+
+  // Advanced filters
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("all");
+  const [minAmount, setMinAmount] = useState<number | null>(null);
+  const [maxAmount, setMaxAmount] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<SortBy>("date_desc");
 
   const transactionsQuery = useQuery({
     queryKey: ["transactions"],
@@ -180,10 +189,49 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
   const filteredTransactions = useMemo(() => {
     let filtered = transactions;
 
+    // Filter by transaction type
     if (filterType !== "all") {
       filtered = filtered.filter((t) => t.type === filterType);
     }
 
+    // Filter by period
+    if (periodFilter !== "all") {
+      const now = new Date();
+      const startDate = new Date();
+
+      switch (periodFilter) {
+        case "today":
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case "7days":
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case "30days":
+          startDate.setDate(now.getDate() - 30);
+          break;
+        case "3months":
+          startDate.setMonth(now.getMonth() - 3);
+          break;
+        case "6months":
+          startDate.setMonth(now.getMonth() - 6);
+          break;
+        case "1year":
+          startDate.setFullYear(now.getFullYear() - 1);
+          break;
+      }
+
+      filtered = filtered.filter((t) => t.date >= startDate);
+    }
+
+    // Filter by amount range
+    if (minAmount !== null) {
+      filtered = filtered.filter((t) => t.amount >= minAmount);
+    }
+    if (maxAmount !== null) {
+      filtered = filtered.filter((t) => t.amount <= maxAmount);
+    }
+
+    // Filter by search query
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -195,8 +243,25 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
       );
     }
 
-    return filtered;
-  }, [transactions, filterType, searchQuery]);
+    // Sort
+    const sorted = [...filtered];
+    switch (sortBy) {
+      case "date_desc":
+        sorted.sort((a, b) => b.date.getTime() - a.date.getTime());
+        break;
+      case "date_asc":
+        sorted.sort((a, b) => a.date.getTime() - b.date.getTime());
+        break;
+      case "amount_desc":
+        sorted.sort((a, b) => b.amount - a.amount);
+        break;
+      case "amount_asc":
+        sorted.sort((a, b) => a.amount - b.amount);
+        break;
+    }
+
+    return sorted;
+  }, [transactions, filterType, periodFilter, minAmount, maxAmount, searchQuery, sortBy]);
 
   return {
     transactions,
@@ -206,6 +271,15 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
     setSearchQuery,
     filterType,
     setFilterType,
+    // Advanced filters
+    periodFilter,
+    setPeriodFilter,
+    minAmount,
+    setMinAmount,
+    maxAmount,
+    setMaxAmount,
+    sortBy,
+    setSortBy,
     addTransaction,
     addMultipleTransactions,
     parseSMSMessages,
