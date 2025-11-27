@@ -5,9 +5,11 @@ import { OnboardingProvider, useOnboarding } from "@/contexts/OnboardingContext"
 import { SecurityProvider, useSecurity } from "@/contexts/SecurityContext";
 import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -48,24 +50,41 @@ function RootLayoutNav() {
     return <LockScreen />;
   }
 
+  const { colors, activeColorScheme } = useTheme();
+
   return (
-    <Stack screenOptions={{ headerBackTitle: "Retour" }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="transaction/[id]"
-        options={{
-          title: "Détails",
-          presentation: "card"
+    <>
+      <StatusBar style={activeColorScheme === "dark" ? "light" : "dark"} />
+      <Stack
+        screenOptions={{
+          headerBackTitle: "Retour",
+          headerStyle: {
+            backgroundColor: colors.cardBackground,
+          },
+          headerTintColor: colors.text,
+          headerShadowVisible: false,
+          contentStyle: {
+            backgroundColor: colors.background,
+          },
         }}
-      />
-      <Stack.Screen
-        name="notifications"
-        options={{
-          title: "Notifications",
-          presentation: "card"
-        }}
-      />
-    </Stack>
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="transaction/[id]"
+          options={{
+            title: "Détails",
+            presentation: "card",
+          }}
+        />
+        <Stack.Screen
+          name="notifications"
+          options={{
+            title: "Notifications",
+            presentation: "card",
+          }}
+        />
+      </Stack>
+    </>
   );
 }
 
@@ -78,13 +97,15 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <OnboardingProvider>
         <SecurityProvider>
-          <NotificationsProvider>
-            <TransactionsProvider>
-              <GestureHandlerRootView>
-                <RootLayoutNav />
-              </GestureHandlerRootView>
-            </TransactionsProvider>
-          </NotificationsProvider>
+          <ThemeProvider>
+            <NotificationsProvider>
+              <TransactionsProvider>
+                <GestureHandlerRootView>
+                  <RootLayoutNav />
+                </GestureHandlerRootView>
+              </TransactionsProvider>
+            </NotificationsProvider>
+          </ThemeProvider>
         </SecurityProvider>
       </OnboardingProvider>
     </QueryClientProvider>

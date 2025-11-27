@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 import { PeriodFilter, SortBy, useTransactions } from "@/contexts/TransactionsContext";
 import { useSecurity } from "@/contexts/SecurityContext";
 import {
@@ -30,6 +30,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TransactionsScreen() {
+  const { colors } = useTheme();
   const {
     filteredTransactions,
     searchQuery,
@@ -70,8 +71,8 @@ export default function TransactionsScreen() {
   };
 
   const getTransactionColor = (type: string) => {
-    const colors = Colors.light.categoryColors as any;
-    return colors[type] || Colors.light.info;
+    const categoryColors = colors.categoryColors as any;
+    return categoryColors[type] || colors.info;
   };
 
   // Period filter options
@@ -160,7 +161,7 @@ export default function TransactionsScreen() {
 
     return (
       <TouchableOpacity
-        style={styles.transactionItem}
+        style={[styles.transactionItem, { backgroundColor: colors.cardBackground }]}
         onPress={() => router.push(`/transaction/${item.id}` as any)}
       >
         <View
@@ -181,20 +182,20 @@ export default function TransactionsScreen() {
           />
         </View>
         <View style={styles.transactionContent}>
-          <Text style={styles.transactionType}>
+          <Text style={[styles.transactionType, { color: colors.text }]}>
             {TransactionTypeLabels[item.type]}
           </Text>
-          <Text style={styles.transactionCounterparty}>
+          <Text style={[styles.transactionCounterparty, { color: colors.textSecondary }]}>
             {item.counterparty}
           </Text>
-          <Text style={styles.transactionDate}>{formatDate(item.date)}</Text>
+          <Text style={[styles.transactionDate, { color: colors.textSecondary }]}>{formatDate(item.date)}</Text>
         </View>
         <View style={styles.transactionAmountContainer}>
           <Text
             style={[
               styles.transactionAmount,
               {
-                color: isIncome ? Colors.light.income : Colors.light.expense,
+                color: isIncome ? colors.income : colors.expense,
               },
             ]}
           >
@@ -202,7 +203,7 @@ export default function TransactionsScreen() {
             {formatCurrency(item.amount)}
           </Text>
           {item.fee > 0 && (
-            <Text style={styles.transactionFee}>
+            <Text style={[styles.transactionFee, { color: colors.textSecondary }]}>
               Frais: {formatCurrency(item.fee)}
             </Text>
           )}
@@ -212,25 +213,26 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.cardBackground }]} edges={["bottom"]}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: "Transactions",
           headerStyle: {
-            backgroundColor: Colors.light.cardBackground,
+            backgroundColor: colors.cardBackground,
           },
+          headerTintColor: colors.text,
           headerShadowVisible: false,
         }}
       />
-      <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <View style={styles.searchInputContainer}>
-            <Search size={20} color={Colors.light.textSecondary} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.searchContainer, { backgroundColor: colors.cardBackground }]}>
+          <View style={[styles.searchInputContainer, { backgroundColor: colors.background }]}>
+            <Search size={20} color={colors.textSecondary} />
             <TextInput
-              style={styles.searchInput}
+              style={[styles.searchInput, { color: colors.text }]}
               placeholder="Rechercher..."
-              placeholderTextColor={Colors.light.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
@@ -238,21 +240,22 @@ export default function TransactionsScreen() {
           <TouchableOpacity
             style={[
               styles.filterButton,
-              showFilters && styles.filterButtonActive,
+              { backgroundColor: colors.background },
+              showFilters && { backgroundColor: colors.tint },
             ]}
             onPress={() => setShowFilters(!showFilters)}
           >
             <Filter
               size={20}
               color={
-                showFilters ? Colors.light.cardBackground : Colors.light.text
+                showFilters ? colors.cardBackground : colors.text
               }
             />
           </TouchableOpacity>
         </View>
 
         {showFilters && (
-          <View style={styles.filtersContainer}>
+          <View style={[styles.filtersContainer, { backgroundColor: colors.cardBackground }]}>
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -262,7 +265,8 @@ export default function TransactionsScreen() {
                 <TouchableOpacity
                   style={[
                     styles.filterChip,
-                    filterType === item.value && styles.filterChipActive,
+                    { backgroundColor: colors.background },
+                    filterType === item.value && { backgroundColor: colors.tint },
                   ]}
                   onPress={() =>
                     setFilterType(item.value as TransactionType | "all")
@@ -271,7 +275,8 @@ export default function TransactionsScreen() {
                   <Text
                     style={[
                       styles.filterChipText,
-                      filterType === item.value && styles.filterChipTextActive,
+                      { color: colors.text },
+                      filterType === item.value && { color: colors.text, fontWeight: "600" },
                     ]}
                   >
                     {item.label}
@@ -284,40 +289,41 @@ export default function TransactionsScreen() {
         )}
 
         {/* Advanced Filters Button */}
-        <View style={styles.advancedFiltersButtonContainer}>
+        <View style={[styles.advancedFiltersButtonContainer, { backgroundColor: colors.cardBackground, borderBottomColor: colors.border }]}>
           <TouchableOpacity
             style={[
               styles.advancedFiltersButton,
-              showAdvancedFilters && styles.advancedFiltersButtonActive,
+              { backgroundColor: colors.background },
+              showAdvancedFilters && { backgroundColor: `${colors.tint}20`, borderColor: colors.tint, borderWidth: 1 },
             ]}
             onPress={() => setShowAdvancedFilters(!showAdvancedFilters)}
           >
-            <SlidersHorizontal size={18} color={Colors.light.text} />
-            <Text style={styles.advancedFiltersButtonText}>
+            <SlidersHorizontal size={18} color={colors.text} />
+            <Text style={[styles.advancedFiltersButtonText, { color: colors.text }]}>
               Filtres avancés
             </Text>
-            {hasActiveFilters && <View style={styles.activeFilterDot} />}
+            {hasActiveFilters && <View style={[styles.activeFilterDot, { backgroundColor: colors.tint }]} />}
           </TouchableOpacity>
           {hasActiveFilters && (
             <TouchableOpacity
-              style={styles.resetFiltersButton}
+              style={[styles.resetFiltersButton, { backgroundColor: `${colors.error}15` }]}
               onPress={resetFilters}
             >
-              <X size={16} color={Colors.light.error} />
-              <Text style={styles.resetFiltersText}>Réinitialiser</Text>
+              <X size={16} color={colors.error} />
+              <Text style={[styles.resetFiltersText, { color: colors.error }]}>Réinitialiser</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Advanced Filters Panel */}
         {showAdvancedFilters && (
-          <View style={styles.advancedFiltersPanel}>
+          <View style={[styles.advancedFiltersPanel, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Period Filter */}
-              <View style={styles.filterSection}>
+              <View style={[styles.filterSection, { borderBottomColor: colors.border }]}>
                 <View style={styles.filterSectionHeader}>
-                  <Calendar size={18} color={Colors.light.tint} />
-                  <Text style={styles.filterSectionTitle}>Période</Text>
+                  <Calendar size={18} color={colors.tint} />
+                  <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Période</Text>
                 </View>
                 <View style={styles.filterOptionsGrid}>
                   {periodFilterOptions.map((option) => (
@@ -325,16 +331,18 @@ export default function TransactionsScreen() {
                       key={option.value}
                       style={[
                         styles.filterOptionChip,
+                        { backgroundColor: colors.cardBackground, borderColor: colors.border },
                         periodFilter === option.value &&
-                        styles.filterOptionChipActive,
+                        { backgroundColor: `${colors.tint}20`, borderColor: colors.tint },
                       ]}
                       onPress={() => setPeriodFilter(option.value)}
                     >
                       <Text
                         style={[
                           styles.filterOptionChipText,
+                          { color: colors.text },
                           periodFilter === option.value &&
-                          styles.filterOptionChipTextActive,
+                          { color: colors.tint, fontWeight: "600" },
                         ]}
                       >
                         {option.label}
@@ -345,31 +353,31 @@ export default function TransactionsScreen() {
               </View>
 
               {/* Amount Range Filter */}
-              <View style={styles.filterSection}>
+              <View style={[styles.filterSection, { borderBottomColor: colors.border }]}>
                 <View style={styles.filterSectionHeader}>
-                  <DollarSign size={18} color={Colors.light.tint} />
-                  <Text style={styles.filterSectionTitle}>Montant</Text>
+                  <DollarSign size={18} color={colors.tint} />
+                  <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Montant</Text>
                 </View>
                 <View style={styles.amountFilterContainer}>
                   <View style={styles.amountInputWrapper}>
-                    <Text style={styles.amountInputLabel}>Min (FCFA)</Text>
+                    <Text style={[styles.amountInputLabel, { color: colors.textSecondary }]}>Min (FCFA)</Text>
                     <TextInput
-                      style={styles.amountInput}
+                      style={[styles.amountInput, { backgroundColor: colors.cardBackground, color: colors.text, borderColor: colors.border }]}
                       placeholder="0"
-                      placeholderTextColor={Colors.light.textSecondary}
+                      placeholderTextColor={colors.textSecondary}
                       keyboardType="numeric"
                       value={minAmountInput}
                       onChangeText={setMinAmountInput}
                       onBlur={applyAmountFilter}
                     />
                   </View>
-                  <Text style={styles.amountSeparator}>—</Text>
+                  <Text style={[styles.amountSeparator, { color: colors.textSecondary }]}>—</Text>
                   <View style={styles.amountInputWrapper}>
-                    <Text style={styles.amountInputLabel}>Max (FCFA)</Text>
+                    <Text style={[styles.amountInputLabel, { color: colors.textSecondary }]}>Max (FCFA)</Text>
                     <TextInput
-                      style={styles.amountInput}
+                      style={[styles.amountInput, { backgroundColor: colors.cardBackground, color: colors.text, borderColor: colors.border }]}
                       placeholder="∞"
-                      placeholderTextColor={Colors.light.textSecondary}
+                      placeholderTextColor={colors.textSecondary}
                       keyboardType="numeric"
                       value={maxAmountInput}
                       onChangeText={setMaxAmountInput}
@@ -378,17 +386,17 @@ export default function TransactionsScreen() {
                   </View>
                 </View>
                 {(minAmount !== null || maxAmount !== null) && (
-                  <Text style={styles.filterActiveText}>
+                  <Text style={[styles.filterActiveText, { color: colors.tint }]}>
                     Filtre actif: {minAmount ?? 0} - {maxAmount ?? "∞"} FCFA
                   </Text>
                 )}
               </View>
 
               {/* Sort Options */}
-              <View style={styles.filterSection}>
+              <View style={[styles.filterSection, { borderBottomColor: colors.border }]}>
                 <View style={styles.filterSectionHeader}>
-                  <ArrowUpDown size={18} color={Colors.light.tint} />
-                  <Text style={styles.filterSectionTitle}>Trier par</Text>
+                  <ArrowUpDown size={18} color={colors.tint} />
+                  <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Trier par</Text>
                 </View>
                 <View style={styles.sortOptionsContainer}>
                   {sortOptions.map((option) => (
@@ -396,26 +404,29 @@ export default function TransactionsScreen() {
                       key={option.value}
                       style={[
                         styles.sortOption,
-                        sortBy === option.value && styles.sortOptionActive,
+                        { backgroundColor: colors.cardBackground, borderColor: colors.border },
+                        sortBy === option.value && { borderColor: colors.tint, backgroundColor: `${colors.tint}10` },
                       ]}
                       onPress={() => setSortBy(option.value)}
                     >
                       <View
                         style={[
                           styles.sortOptionRadio,
+                          { borderColor: colors.textSecondary },
                           sortBy === option.value &&
-                          styles.sortOptionRadioActive,
+                          { borderColor: colors.tint },
                         ]}
                       >
                         {sortBy === option.value && (
-                          <View style={styles.sortOptionRadioDot} />
+                          <View style={[styles.sortOptionRadioDot, { backgroundColor: colors.tint }]} />
                         )}
                       </View>
                       <Text
                         style={[
                           styles.sortOptionText,
+                          { color: colors.text },
                           sortBy === option.value &&
-                          styles.sortOptionTextActive,
+                          { color: colors.tint, fontWeight: "600" },
                         ]}
                       >
                         {option.label}
@@ -428,22 +439,22 @@ export default function TransactionsScreen() {
           </View>
         )}
 
-        <Text style={styles.resultsCount}>
+        <Text style={[styles.resultsCount, { color: colors.textSecondary }]}>
           {filteredTransactions.length} transaction
           {filteredTransactions.length !== 1 ? "s" : ""}
         </Text>
 
         {filteredTransactions.length > 0 && (
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryTitle}>Résumé</Text>
+          <View style={[styles.summaryCard, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.summaryTitle, { color: colors.text }]}>Résumé</Text>
             <View style={styles.summaryContent}>
               {(filterType === "all" ||
                 filterType === "transfer_received" ||
                 filterType === "deposit" ||
                 filterType === "uemoa_received") && (
                   <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Total reçu</Text>
-                    <Text style={[styles.summaryValue, styles.incomeText]}>
+                    <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Total reçu</Text>
+                    <Text style={[styles.summaryValue, { color: colors.income }]}>
                       +{formatCurrency(totals.totalReceived)}
                     </Text>
                   </View>
@@ -454,23 +465,23 @@ export default function TransactionsScreen() {
                 filterType === "payment" ||
                 filterType === "uemoa_sent") && (
                   <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Total envoyé</Text>
-                    <Text style={[styles.summaryValue, styles.expenseText]}>
+                    <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Total envoyé</Text>
+                    <Text style={[styles.summaryValue, { color: colors.expense }]}>
                       -{formatCurrency(totals.totalSent)}
                     </Text>
                   </View>
                 )}
               {totals.totalFees > 0 && (
                 <View style={styles.summaryRow}>
-                  <Text style={styles.summaryLabel}>Frais totaux</Text>
-                  <Text style={styles.summaryValue}>
+                  <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Frais totaux</Text>
+                  <Text style={[styles.summaryValue, { color: colors.warning }]}>
                     {formatCurrency(totals.totalFees)}
                   </Text>
                 </View>
               )}
               {filterType === "all" && (
-                <View style={[styles.summaryRow, styles.netBalanceRow]}>
-                  <Text style={[styles.summaryLabel, styles.netBalanceLabel]}>
+                <View style={[styles.summaryRow, styles.netBalanceRow, { borderTopColor: `${colors.textSecondary}20` }]}>
+                  <Text style={[styles.summaryLabel, styles.netBalanceLabel, { color: colors.text }]}>
                     Solde net
                   </Text>
                   <Text
@@ -480,8 +491,8 @@ export default function TransactionsScreen() {
                       {
                         color:
                           totals.netBalance >= 0
-                            ? Colors.light.income
-                            : Colors.light.expense,
+                            ? colors.income
+                            : colors.expense,
                       },
                     ]}
                   >
@@ -502,10 +513,10 @@ export default function TransactionsScreen() {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>
+              <Text style={[styles.emptyStateText, { color: colors.text }]}>
                 Aucune transaction trouvée
               </Text>
-              <Text style={styles.emptyStateSubtext}>
+              <Text style={[styles.emptyStateSubtext, { color: colors.textSecondary }]}>
                 {searchQuery || filterType !== "all"
                   ? "Essayez de modifier vos filtres"
                   : "Synchronisez vos SMS MTN MoMo pour commencer"}
@@ -521,11 +532,9 @@ export default function TransactionsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.cardBackground,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   searchContainer: {
     flexDirection: "row",
@@ -533,13 +542,11 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     gap: 12,
-    backgroundColor: Colors.light.cardBackground,
   },
   searchInputContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.background,
     borderRadius: 1,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -548,21 +555,18 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
   },
   filterButton: {
     width: 48,
     height: 48,
     borderRadius: 1,
-    backgroundColor: Colors.light.background,
     alignItems: "center",
     justifyContent: "center",
   },
   filterButtonActive: {
-    backgroundColor: Colors.light.tint,
+    // backgroundColor set dynamically
   },
   filtersContainer: {
-    backgroundColor: Colors.light.cardBackground,
     paddingBottom: 12,
   },
   filtersContent: {
@@ -573,24 +577,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 1,
-    backgroundColor: Colors.light.background,
     marginRight: 8,
   },
   filterChipActive: {
-    backgroundColor: Colors.light.tint,
+    // backgroundColor set dynamically
   },
   filterChipText: {
     fontSize: 14,
     fontWeight: "500" as const,
-    color: Colors.light.text,
   },
   filterChipTextActive: {
-    color: Colors.light.text,
+    // color set dynamically
     fontWeight: "600" as const,
   },
   resultsCount: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -601,7 +602,6 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.cardBackground,
     padding: 16,
     borderRadius: 1,
     marginBottom: 8,
@@ -625,16 +625,13 @@ const styles = StyleSheet.create({
   transactionType: {
     fontSize: 15,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   transactionCounterparty: {
     fontSize: 13,
-    color: Colors.light.textSecondary,
     marginTop: 2,
   },
   transactionDate: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
     marginTop: 2,
   },
   transactionAmountContainer: {
@@ -646,7 +643,6 @@ const styles = StyleSheet.create({
   },
   transactionFee: {
     fontSize: 11,
-    color: Colors.light.textSecondary,
     marginTop: 2,
   },
   emptyState: {
@@ -657,16 +653,13 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
     textAlign: "center",
     marginTop: 8,
   },
   summaryCard: {
-    backgroundColor: Colors.light.cardBackground,
     marginHorizontal: 16,
     marginBottom: 12,
     borderRadius: 12,
@@ -680,7 +673,6 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.text,
     marginBottom: 12,
   },
   summaryContent: {
@@ -694,30 +686,26 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
     fontWeight: "500" as const,
   },
   summaryValue: {
     fontSize: 15,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   incomeText: {
-    color: Colors.light.income,
+    // color set dynamically
   },
   expenseText: {
-    color: Colors.light.expense,
+    // color set dynamically
   },
   netBalanceRow: {
     borderTopWidth: 1,
-    borderTopColor: `${Colors.light.textSecondary}20`,
     marginTop: 8,
     paddingTop: 12,
   },
   netBalanceLabel: {
     fontSize: 15,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   netBalanceValue: {
     fontSize: 18,
@@ -729,9 +717,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 12,
-    backgroundColor: Colors.light.cardBackground,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   advancedFiltersButton: {
     flex: 1,
@@ -741,24 +727,19 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: Colors.light.background,
     gap: 8,
   },
   advancedFiltersButtonActive: {
-    backgroundColor: `${Colors.light.tint}20`,
-    borderWidth: 1,
-    borderColor: Colors.light.tint,
+    // backgroundColor, borderColor, borderWidth set dynamically
   },
   advancedFiltersButtonText: {
     fontSize: 14,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   activeFilterDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.light.tint,
   },
   resetFiltersButton: {
     flexDirection: "row",
@@ -766,24 +747,19 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: `${Colors.light.error}15`,
     gap: 6,
   },
   resetFiltersText: {
     fontSize: 13,
     fontWeight: "600" as const,
-    color: Colors.light.error,
   },
   advancedFiltersPanel: {
-    backgroundColor: Colors.light.background,
     maxHeight: 400,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   filterSection: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   filterSectionHeader: {
     flexDirection: "row",
@@ -794,7 +770,6 @@ const styles = StyleSheet.create({
   filterSectionTitle: {
     fontSize: 15,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   filterOptionsGrid: {
     flexDirection: "row",
@@ -805,22 +780,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 16,
-    backgroundColor: Colors.light.cardBackground,
     borderWidth: 1,
-    borderColor: Colors.light.border,
   },
   filterOptionChipActive: {
-    backgroundColor: Colors.light.tint,
-    borderColor: Colors.light.tint,
+    // backgroundColor, borderColor set dynamically
   },
   filterOptionChipText: {
     fontSize: 13,
     fontWeight: "500" as const,
-    color: Colors.light.text,
   },
   filterOptionChipTextActive: {
-    color: Colors.light.cardBackground,
-    fontWeight: "600" as const,
+    // color, fontWeight set dynamically
   },
   amountFilterContainer: {
     flexDirection: "row",
@@ -833,28 +803,22 @@ const styles = StyleSheet.create({
   amountInputLabel: {
     fontSize: 12,
     fontWeight: "500" as const,
-    color: Colors.light.textSecondary,
     marginBottom: 6,
   },
   amountInput: {
-    backgroundColor: Colors.light.cardBackground,
     borderWidth: 1,
-    borderColor: Colors.light.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: Colors.light.text,
   },
   amountSeparator: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.textSecondary,
     paddingBottom: 10,
   },
   filterActiveText: {
     fontSize: 11,
-    color: Colors.light.tint,
     marginTop: 8,
     fontWeight: "500" as const,
   },
@@ -867,40 +831,33 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 12,
     borderRadius: 8,
-    backgroundColor: Colors.light.cardBackground,
     gap: 12,
   },
   sortOptionActive: {
-    backgroundColor: `${Colors.light.tint}10`,
-    borderWidth: 1,
-    borderColor: Colors.light.tint,
+    // backgroundColor, borderColor set dynamically
   },
   sortOptionRadio: {
     width: 20,
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: Colors.light.border,
     alignItems: "center",
     justifyContent: "center",
   },
   sortOptionRadioActive: {
-    borderColor: Colors.light.tint,
+    // borderColor set dynamically
   },
   sortOptionRadioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.light.tint,
   },
   sortOptionText: {
     flex: 1,
     fontSize: 14,
     fontWeight: "500" as const,
-    color: Colors.light.text,
   },
   sortOptionTextActive: {
-    fontWeight: "600" as const,
-    color: Colors.light.tint,
+    // color, fontWeight set dynamically
   },
 });

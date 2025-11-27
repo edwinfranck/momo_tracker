@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import { useTheme, ThemeMode } from "@/contexts/ThemeContext";
 import { useSecurity } from "@/contexts/SecurityContext";
 import { useTransactions } from "@/contexts/TransactionsContext";
 import { Stack, useRouter } from "expo-router";
@@ -11,7 +11,11 @@ import {
   EyeOff,
   Shield,
   FileText,
-  ChevronRight
+  ChevronRight,
+  Bell,
+  Moon,
+  Sun,
+  Smartphone
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -28,6 +32,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { colors, themeMode, setTheme } = useTheme();
   const {
     transactions,
     clearAllTransactions,
@@ -143,26 +148,60 @@ export default function SettingsScreen() {
     }
   };
 
+  const renderThemeOption = (mode: ThemeMode, icon: React.ReactNode, label: string) => {
+    const isSelected = themeMode === mode;
+    return (
+      <TouchableOpacity
+        style={[
+          styles.themeOption,
+          isSelected && { backgroundColor: `${colors.tint}20`, borderColor: colors.tint }
+        ]}
+        onPress={() => setTheme(mode)}
+      >
+        {icon}
+        <Text style={[
+          styles.themeOptionLabel,
+          { color: isSelected ? colors.tint : colors.textSecondary }
+        ]}>
+          {label}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.cardBackground }]} edges={["bottom"]}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: "Paramètres",
           headerStyle: {
-            backgroundColor: Colors.light.cardBackground,
+            backgroundColor: colors.cardBackground,
           },
+          headerTintColor: colors.text,
           headerShadowVisible: false,
         }}
       />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
+
+        {/* Apparence Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Synchronisation</Text>
-          <View style={styles.card}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Dernière synchronisation</Text>
-              <Text style={styles.infoValue}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Apparence</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
+            <View style={styles.themeSelector}>
+              {renderThemeOption("light", <Sun size={24} color={themeMode === "light" ? colors.tint : colors.textSecondary} />, "Clair")}
+              {renderThemeOption("dark", <Moon size={24} color={themeMode === "dark" ? colors.tint : colors.textSecondary} />, "Sombre")}
+              {renderThemeOption("system", <Smartphone size={24} color={themeMode === "system" ? colors.tint : colors.textSecondary} />, "Système")}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Synchronisation</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Dernière synchronisation</Text>
+              <Text style={[styles.infoValue, { color: colors.text }]}>
                 {lastSync
                   ? new Intl.DateTimeFormat("fr-FR", {
                     day: "numeric",
@@ -174,30 +213,30 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Transactions stockées</Text>
-              <Text style={styles.infoValue}>{transactions.length}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Transactions stockées</Text>
+              <Text style={[styles.infoValue, { color: colors.text }]}>{transactions.length}</Text>
             </View>
           </View>
 
           <TouchableOpacity
-            style={[styles.button, styles.primaryButton]}
+            style={[styles.button, styles.primaryButton, { backgroundColor: colors.tint }]}
             onPress={handleSyncSMS}
             disabled={isSyncing || isSaving}
           >
             <RefreshCw
               size={20}
-              color={Colors.light.text}
+              color={colors.text}
               style={isSyncing && { transform: [{ rotate: "180deg" }] }}
             />
-            <Text style={styles.primaryButtonText}>
+            <Text style={[styles.primaryButtonText, { color: colors.text }]}>
               {isSyncing ? "Synchronisation..." : "Synchroniser les SMS"}
             </Text>
           </TouchableOpacity>
 
           {Platform.OS !== "android" && (
-            <View style={styles.warningCard}>
-              <AlertCircle size={20} color={Colors.light.warning} />
-              <Text style={styles.warningText}>
+            <View style={[styles.warningCard, { backgroundColor: `${colors.warning}20` }]}>
+              <AlertCircle size={20} color={colors.warning} />
+              <Text style={[styles.warningText, { color: colors.warning }]}>
                 {Platform.OS === "ios"
                   ? "La lecture de SMS n'est pas disponible sur iOS pour des raisons de sécurité."
                   : "La lecture de SMS n'est disponible que sur Android."}
@@ -206,9 +245,9 @@ export default function SettingsScreen() {
           )}
 
           {Platform.OS === "android" && (
-            <View style={styles.infoCard}>
-              <Shield size={16} color={Colors.light.success} />
-              <Text style={styles.infoCardText}>
+            <View style={[styles.infoCard, { backgroundColor: `${colors.success}15` }]}>
+              <Shield size={16} color={colors.success} />
+              <Text style={[styles.infoCardText, { color: colors.success }]}>
                 ✅ Synchronisation automatique activée ! Les nouvelles transactions
                 MTN MoMo seront détectées en temps réel et vous recevrez une notification.
               </Text>
@@ -217,51 +256,68 @@ export default function SettingsScreen() {
 
           {/* Test Notification Button */}
           {Platform.OS === "android" && (
-            <TouchableOpacity
-              style={[styles.button, styles.testButton]}
-              onPress={async () => {
-                try {
-                  const { showTransactionNotification } = await import("@/utils/notificationService");
-                  const testTransaction = {
-                    id: "test-" + Date.now(),
-                    type: "withdrawal" as const,
-                    amount: 5000,
-                    fee: 0,
-                    balance: 45000,
-                    counterparty: "Test ATM",
-                    date: new Date(),
-                    transactionId: "TEST123",
-                    rawMessage: "Test notification",
-                  };
-                  await showTransactionNotification(testTransaction);
-                  Alert.alert("Test envoyé", "Vérifiez votre barre de notification !");
-                } catch (error) {
-                  console.error("Erreur test notification:", error);
-                  Alert.alert("Erreur", "Impossible d'afficher la notification de test");
-                }
-              }}
-            >
-              <AlertCircle size={20} color={Colors.light.info} />
-              <Text style={styles.testButtonText}>
-                Tester la notification
-              </Text>
-            </TouchableOpacity>
+            <View style={{ gap: 12 }}>
+              <TouchableOpacity
+                style={[styles.button, styles.testButton, { backgroundColor: `${colors.info}20`, borderColor: colors.info }]}
+                onPress={async () => {
+                  try {
+                    const { showTransactionNotification } = await import("@/utils/notificationService");
+                    const testTransaction = {
+                      id: "test-" + Date.now(),
+                      type: "withdrawal" as const,
+                      amount: 5000,
+                      fee: 0,
+                      balance: 45000,
+                      counterparty: "Test ATM",
+                      date: new Date(),
+                      transactionId: "TEST123",
+                      rawMessage: "Test notification",
+                    };
+                    await showTransactionNotification(testTransaction);
+                    Alert.alert("Test envoyé", "Vérifiez votre barre de notification !");
+                  } catch (error) {
+                    console.error("Erreur test notification:", error);
+                    Alert.alert("Erreur", "Impossible d'afficher la notification de test");
+                  }
+                }}
+              >
+                <AlertCircle size={20} color={colors.info} />
+                <Text style={[styles.testButtonText, { color: colors.info }]}>
+                  Tester notif native
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, styles.testButton, { backgroundColor: `${colors.info}20`, borderColor: colors.info }]}
+                onPress={async () => {
+                  Alert.alert(
+                    "Test In-App",
+                    "Pour tester les notifications in-app, envoyez un SMS de test ou attendez une transaction réelle. Vous verrez la cloche sonner sur l'accueil !"
+                  );
+                }}
+              >
+                <Bell size={20} color={colors.info} />
+                <Text style={[styles.testButtonText, { color: colors.info }]}>
+                  Info notif in-app
+                </Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
 
         {/* Security & Privacy Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sécurité & Confidentialité</Text>
-          <View style={styles.card}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Sécurité & Confidentialité</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
             {/* App Lock Toggle */}
-            <View style={styles.settingRow}>
+            <View style={[styles.settingRow, { borderBottomColor: colors.border }]}>
               <View style={styles.settingLeft}>
-                <View style={styles.settingIconContainer}>
-                  <Lock size={20} color={Colors.light.tint} />
+                <View style={[styles.settingIconContainer, { backgroundColor: `${colors.tint}15` }]}>
+                  <Lock size={20} color={colors.tint} />
                 </View>
                 <View style={styles.settingTextContainer}>
-                  <Text style={styles.settingLabel}>Verrouillage de l'app</Text>
-                  <Text style={styles.settingDescription}>
+                  <Text style={[styles.settingLabel, { color: colors.text }]}>Verrouillage de l'app</Text>
+                  <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
                     {isBiometricSupported
                       ? "Empreinte digitale ou Code PIN"
                       : "Code PIN du téléphone"}
@@ -272,26 +328,26 @@ export default function SettingsScreen() {
                 value={isSecurityEnabled}
                 onValueChange={handleToggleSecurity}
                 trackColor={{
-                  false: Colors.light.border,
-                  true: Colors.light.tint,
+                  false: colors.border,
+                  true: colors.tint,
                 }}
-                thumbColor={Colors.light.cardBackground}
+                thumbColor={colors.cardBackground}
               />
             </View>
 
             {/* Hide Amounts Toggle */}
             <View style={[styles.settingRow, styles.settingRowLast]}>
               <View style={styles.settingLeft}>
-                <View style={styles.settingIconContainer}>
+                <View style={[styles.settingIconContainer, { backgroundColor: `${colors.tint}15` }]}>
                   {hideAmounts ? (
-                    <EyeOff size={20} color={Colors.light.tint} />
+                    <EyeOff size={20} color={colors.tint} />
                   ) : (
-                    <Eye size={20} color={Colors.light.tint} />
+                    <Eye size={20} color={colors.tint} />
                   )}
                 </View>
                 <View style={styles.settingTextContainer}>
-                  <Text style={styles.settingLabel}>Masquer les montants</Text>
-                  <Text style={styles.settingDescription}>
+                  <Text style={[styles.settingLabel, { color: colors.text }]}>Masquer les montants</Text>
+                  <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
                     Afficher ••••••  au lieu des montants
                   </Text>
                 </View>
@@ -300,18 +356,18 @@ export default function SettingsScreen() {
                 value={hideAmounts}
                 onValueChange={toggleHideAmounts}
                 trackColor={{
-                  false: Colors.light.border,
-                  true: Colors.light.tint,
+                  false: colors.border,
+                  true: colors.tint,
                 }}
-                thumbColor={Colors.light.cardBackground}
+                thumbColor={colors.cardBackground}
               />
             </View>
           </View>
 
           {!isBiometricSupported && Platform.OS === "android" && (
-            <View style={styles.infoCard}>
-              <Shield size={16} color={Colors.light.info} />
-              <Text style={styles.infoCardText}>
+            <View style={[styles.infoCard, { backgroundColor: `${colors.info}15` }]}>
+              <Shield size={16} color={colors.info} />
+              <Text style={[styles.infoCardText, { color: colors.info }]}>
                 L'authentification biométrique n'est pas configurée sur cet appareil.
                 Le code PIN du téléphone sera utilisé.
               </Text>
@@ -320,29 +376,29 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Statistiques</Text>
-          <View style={styles.card}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Total envoyé</Text>
-              <Text style={[styles.infoValue, styles.expenseText]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Statistiques</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Total envoyé</Text>
+              <Text style={[styles.infoValue, { color: colors.expense }]}>
                 {stats.totalSent.toLocaleString("fr-FR")} FCFA
               </Text>
             </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Total reçu</Text>
-              <Text style={[styles.infoValue, styles.incomeText]}>
+            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Total reçu</Text>
+              <Text style={[styles.infoValue, { color: colors.income }]}>
                 {stats.totalReceived.toLocaleString("fr-FR")} FCFA
               </Text>
             </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Total frais</Text>
-              <Text style={[styles.infoValue, styles.warningText]}>
+            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Total frais</Text>
+              <Text style={[styles.infoValue, { color: colors.warning }]}>
                 {stats.totalFees.toLocaleString("fr-FR")} FCFA
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Solde actuel</Text>
-              <Text style={styles.infoValue}>
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Solde actuel</Text>
+              <Text style={[styles.infoValue, { color: colors.text }]}>
                 {stats.currentBalance.toLocaleString("fr-FR")} FCFA
               </Text>
             </View>
@@ -350,33 +406,33 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Données</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Données</Text>
           <TouchableOpacity
-            style={[styles.button, styles.dangerButton]}
+            style={[styles.button, styles.dangerButton, { backgroundColor: colors.error }]}
             onPress={handleClearData}
             disabled={isSaving || transactions.length === 0}
           >
-            <Trash2 size={20} color={Colors.light.cardBackground} />
-            <Text style={styles.dangerButtonText}>
+            <Trash2 size={20} color={colors.cardBackground} />
+            <Text style={[styles.dangerButtonText, { color: colors.cardBackground }]}>
               Supprimer toutes les transactions
             </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>À propos</Text>
-          <View style={styles.card}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>À propos</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
             <TouchableOpacity
-              style={styles.settingRow}
+              style={[styles.settingRow, { borderBottomColor: colors.border }]}
               onPress={() => router.push("/terms" as any)}
             >
               <View style={styles.settingLeft}>
-                <View style={styles.settingIconContainer}>
-                  <FileText size={20} color={Colors.light.tint} />
+                <View style={[styles.settingIconContainer, { backgroundColor: `${colors.tint}15` }]}>
+                  <FileText size={20} color={colors.tint} />
                 </View>
-                <Text style={styles.settingLabel}>Conditions d'Utilisation</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Conditions d'Utilisation</Text>
               </View>
-              <ChevronRight size={20} color={Colors.light.textSecondary} />
+              <ChevronRight size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -412,11 +468,11 @@ export default function SettingsScreen() {
             </TouchableOpacity>
 
             <View style={styles.aboutContent}>
-              <Text style={styles.aboutText}>
+              <Text style={[styles.aboutText, { color: colors.textSecondary }]}>
                 MTN MoMo Tracker vous aide à suivre et analyser vos transactions
                 Mobile Money en lisant vos SMS de notification.
               </Text>
-              <Text style={[styles.aboutText, styles.versionText]}>
+              <Text style={[styles.aboutText, styles.versionText, { color: colors.textSecondary }]}>
                 Version 1.0.0
               </Text>
             </View>
@@ -430,11 +486,9 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.cardBackground,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   section: {
     marginTop: 24,
@@ -443,12 +497,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700" as const,
-    color: Colors.light.text,
     marginBottom: 12,
   },
   card: {
-    backgroundColor: Colors.light.cardBackground,
-    borderRadius: 1,
+    borderRadius: 12,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -456,30 +508,45 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  themeSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  themeOption: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  themeOptionLabel: {
+    marginTop: 8,
+    fontSize: 12,
+    fontWeight: '600',
+  },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   infoLabel: {
     fontSize: 15,
-    color: Colors.light.textSecondary,
     flex: 1,
     flexWrap: "wrap",
   },
   infoValue: {
     fontSize: 15,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   expenseText: {
-    color: Colors.light.expense,
+    // color set dynamically
   },
   incomeText: {
-    color: Colors.light.income,
+    // color set dynamically
   },
   button: {
     flexDirection: "row",
@@ -487,44 +554,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 1,
+    borderRadius: 12,
     marginTop: 12,
     gap: 8,
   },
   primaryButton: {
-    backgroundColor: Colors.light.tint,
+    // backgroundColor set dynamically
   },
   primaryButtonText: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   dangerButton: {
-    backgroundColor: Colors.light.error,
+    // backgroundColor set dynamically
   },
   dangerButtonText: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.cardBackground,
   },
   warningCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: `${Colors.light.warning}20`,
     padding: 12,
-    borderRadius: 1,
+    borderRadius: 12,
     marginTop: 12,
     gap: 8,
   },
   warningText: {
     //flex: 1,
     fontSize: 13,
-    color: Colors.light.warning,
     lineHeight: 18,
   },
   aboutText: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
     lineHeight: 20,
   },
   versionText: {
@@ -538,7 +600,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   settingRowLast: {
     borderBottomWidth: 0,
@@ -553,7 +614,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: `${Colors.light.tint}15`,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -563,17 +623,14 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 15,
     fontWeight: "600" as const,
-    color: Colors.light.text,
     marginBottom: 2,
   },
   settingDescription: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
   },
   infoCard: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: `${Colors.light.info}15`,
     padding: 12,
     borderRadius: 8,
     marginTop: 12,
@@ -582,7 +639,6 @@ const styles = StyleSheet.create({
   infoCardText: {
     flex: 1,
     fontSize: 12,
-    color: Colors.light.info,
     lineHeight: 18,
   },
   aboutContent: {
@@ -590,13 +646,10 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   testButton: {
-    backgroundColor: `${Colors.light.info}20`,
     borderWidth: 1,
-    borderColor: Colors.light.info,
   },
   testButtonText: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.info,
   },
 });

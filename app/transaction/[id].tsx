@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useTransactions } from "@/contexts/TransactionsContext";
 import { TransactionTypeLabels } from "@/types/transaction";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -25,6 +25,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TransactionDetailScreen() {
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams();
   const { transactions, deleteTransaction } = useTransactions();
   const router = useRouter();
@@ -33,10 +34,10 @@ export default function TransactionDetailScreen() {
 
   if (!transaction) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.cardBackground }]}>
         <Stack.Screen options={{ title: "Transaction introuvable" }} />
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Transaction introuvable</Text>
+          <Text style={[styles.errorText, { color: colors.textSecondary }]}>Transaction introuvable</Text>
         </View>
       </SafeAreaView>
     );
@@ -58,8 +59,8 @@ export default function TransactionDetailScreen() {
   };
 
   const getTransactionColor = (type: string) => {
-    const colors = Colors.light.categoryColors as any;
-    return colors[type] || Colors.light.info;
+    const categoryColors = colors.categoryColors as any;
+    return categoryColors[type] || colors.info;
   };
 
   const isIncome =
@@ -86,81 +87,82 @@ export default function TransactionDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.cardBackground }]} edges={["top"]}>
       <Stack.Screen
         options={{
           title: "Détails",
           headerStyle: {
-            backgroundColor: Colors.light.cardBackground,
+            backgroundColor: colors.cardBackground,
           },
+          headerTintColor: colors.text,
           headerShadowVisible: false,
         }}
       />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
         <View
           style={[
             styles.header,
             { backgroundColor: getTransactionColor(transaction.type) },
           ]}
         >
-          <Text style={styles.headerLabel}>
+          <Text style={[styles.headerLabel, { color: colors.cardBackground }]}>
             {TransactionTypeLabels[transaction.type]}
           </Text>
-          <Text style={styles.headerAmount}>
+          <Text style={[styles.headerAmount, { color: colors.cardBackground }]}>
             {isIncome ? "+" : "-"}
             {formatCurrency(transaction.amount)}
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Informations générales</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Informations générales</Text>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
+          <View style={[styles.infoCard, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+              <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
                 <Tag size={20} color={getTransactionColor(transaction.type)} />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Type</Text>
-                <Text style={styles.infoValue}>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Type</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
                   {TransactionTypeLabels[transaction.type]}
                 </Text>
               </View>
             </View>
 
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
-                <User size={20} color={Colors.light.textSecondary} />
+            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+              <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
+                <User size={20} color={colors.textSecondary} />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>
                   {isIncome ? "Expéditeur" : "Destinataire"}
                 </Text>
-                <Text style={styles.infoValue}>{transaction.counterparty}</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>{transaction.counterparty}</Text>
               </View>
             </View>
 
             {transaction.counterpartyPhone && (
-              <View style={styles.infoRow}>
-                <View style={styles.infoIcon}>
-                  <Phone size={20} color={Colors.light.textSecondary} />
+              <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+                <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
+                  <Phone size={20} color={colors.textSecondary} />
                 </View>
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Téléphone</Text>
-                  <Text style={styles.infoValue}>
+                  <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Téléphone</Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
                     {transaction.counterpartyPhone}
                   </Text>
                 </View>
               </View>
             )}
 
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
-                <Calendar size={20} color={Colors.light.textSecondary} />
+            <View style={[styles.infoRow, { borderBottomColor: "transparent" }]}>
+              <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
+                <Calendar size={20} color={colors.textSecondary} />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Date et heure</Text>
-                <Text style={styles.infoValue}>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Date et heure</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
                   {formatDate(transaction.date)}
                 </Text>
               </View>
@@ -169,25 +171,25 @@ export default function TransactionDetailScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Détails financiers</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Détails financiers</Text>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
+          <View style={[styles.infoCard, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+              <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
                 <DollarSign
                   size={20}
-                  color={isIncome ? Colors.light.income : Colors.light.expense}
+                  color={isIncome ? colors.income : colors.expense}
                 />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Montant</Text>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Montant</Text>
                 <Text
                   style={[
                     styles.infoValue,
                     {
                       color: isIncome
-                        ? Colors.light.income
-                        : Colors.light.expense,
+                        ? colors.income
+                        : colors.expense,
                     },
                   ]}
                 >
@@ -197,26 +199,26 @@ export default function TransactionDetailScreen() {
             </View>
 
             {transaction.fee > 0 && (
-              <View style={styles.infoRow}>
-                <View style={styles.infoIcon}>
-                  <DollarSign size={20} color={Colors.light.warning} />
+              <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+                <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
+                  <DollarSign size={20} color={colors.warning} />
                 </View>
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Frais</Text>
-                  <Text style={[styles.infoValue, { color: Colors.light.warning }]}>
+                  <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Frais</Text>
+                  <Text style={[styles.infoValue, { color: colors.warning }]}>
                     {formatCurrency(transaction.fee)}
                   </Text>
                 </View>
               </View>
             )}
 
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
-                <Wallet size={20} color={Colors.light.info} />
+            <View style={[styles.infoRow, { borderBottomColor: "transparent" }]}>
+              <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
+                <Wallet size={20} color={colors.info} />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Solde après transaction</Text>
-                <Text style={[styles.infoValue, { color: Colors.light.info }]}>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Solde après transaction</Text>
+                <Text style={[styles.infoValue, { color: colors.info }]}>
                   {formatCurrency(transaction.balance)}
                 </Text>
               </View>
@@ -225,27 +227,27 @@ export default function TransactionDetailScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Informations techniques</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Informations techniques</Text>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
-                <Hash size={20} color={Colors.light.textSecondary} />
+          <View style={[styles.infoCard, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.infoRow, { borderBottomColor: transaction.reference ? colors.border : "transparent" }]}>
+              <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
+                <Hash size={20} color={colors.textSecondary} />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>ID Transaction</Text>
-                <Text style={styles.infoValue}>{transaction.transactionId}</Text>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>ID Transaction</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>{transaction.transactionId}</Text>
               </View>
             </View>
 
             {transaction.reference && (
-              <View style={styles.infoRow}>
-                <View style={styles.infoIcon}>
-                  <FileText size={20} color={Colors.light.textSecondary} />
+              <View style={[styles.infoRow, { borderBottomColor: "transparent" }]}>
+                <View style={[styles.infoIcon, { backgroundColor: colors.background }]}>
+                  <FileText size={20} color={colors.textSecondary} />
                 </View>
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Référence</Text>
-                  <Text style={styles.infoValue}>{transaction.reference}</Text>
+                  <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Référence</Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>{transaction.reference}</Text>
                 </View>
               </View>
             )}
@@ -254,9 +256,9 @@ export default function TransactionDetailScreen() {
 
         {transaction.rawMessage && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Message original</Text>
-            <View style={styles.rawMessageCard}>
-              <Text style={styles.rawMessageText}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Message original</Text>
+            <View style={[styles.rawMessageCard, { backgroundColor: colors.cardBackground }]}>
+              <Text style={[styles.rawMessageText, { color: colors.textSecondary }]}>
                 {transaction.rawMessage}
               </Text>
             </View>
@@ -265,11 +267,11 @@ export default function TransactionDetailScreen() {
 
         <View style={styles.section}>
           <TouchableOpacity
-            style={styles.deleteButton}
+            style={[styles.deleteButton, { backgroundColor: colors.error }]}
             onPress={handleDelete}
           >
-            <Trash2 size={20} color={Colors.light.cardBackground} />
-            <Text style={styles.deleteButtonText}>Supprimer la transaction</Text>
+            <Trash2 size={20} color="#FFFFFF" />
+            <Text style={[styles.deleteButtonText, { color: "#FFFFFF" }]}>Supprimer la transaction</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -280,11 +282,9 @@ export default function TransactionDetailScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.cardBackground,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   errorContainer: {
     flex: 1,
@@ -295,7 +295,6 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 18,
     fontWeight: "600" as const,
-    color: Colors.light.textSecondary,
   },
   header: {
     padding: 32,
@@ -304,13 +303,11 @@ const styles = StyleSheet.create({
   headerLabel: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.text,
-    opacity: 0.8,
+    opacity: 0.9,
   },
   headerAmount: {
     fontSize: 42,
     fontWeight: "700" as const,
-    color: Colors.light.text,
     marginTop: 8,
   },
   section: {
@@ -320,31 +317,27 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700" as const,
-    color: Colors.light.text,
     marginBottom: 12,
   },
   infoCard: {
-    backgroundColor: Colors.light.cardBackground,
     borderRadius: 1,
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-    //elevation: 1,
+    elevation: 1,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   infoIcon: {
     width: 40,
     height: 40,
     borderRadius: 1,
-    backgroundColor: Colors.light.background,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -354,27 +347,23 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 13,
-    color: Colors.light.textSecondary,
     marginBottom: 4,
   },
   infoValue: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   rawMessageCard: {
-    backgroundColor: Colors.light.cardBackground,
     borderRadius: 1,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-    //elevation: 1,
+    elevation: 1,
   },
   rawMessageText: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
     lineHeight: 20,
     fontFamily: "monospace" as const,
   },
@@ -382,7 +371,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.light.error,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 1,
@@ -392,6 +380,5 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     fontSize: 16,
     fontWeight: "600" as const,
-    color: Colors.light.cardBackground,
   },
 });

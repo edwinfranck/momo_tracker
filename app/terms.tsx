@@ -1,17 +1,20 @@
 import TermsAndConditions from "@/components/TermsAndConditions";
-import Colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Stack } from "expo-router";
 import React from "react";
 
 export default function TermsScreen() {
+    const { colors } = useTheme();
+
     return (
         <>
             <Stack.Screen
                 options={{
                     title: "Conditions d'Utilisation",
                     headerStyle: {
-                        backgroundColor: Colors.light.cardBackground,
+                        backgroundColor: colors.cardBackground,
                     },
+                    headerTintColor: colors.text,
                     headerShadowVisible: false,
                     presentation: "modal",
                 }}

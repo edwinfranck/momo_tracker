@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useNotifications } from "@/contexts/NotificationsContext";
 import { Stack, useRouter } from "expo-router";
 import { Bell, Trash2, Check, CheckCheck } from "lucide-react-native";
@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotificationsScreen() {
+    const { colors } = useTheme();
     const router = useRouter();
     const {
         notifications,
@@ -57,14 +58,15 @@ export default function NotificationsScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={["bottom"]}>
             <Stack.Screen
                 options={{
                     headerShown: true,
                     title: "Notifications",
                     headerStyle: {
-                        backgroundColor: Colors.light.cardBackground,
+                        backgroundColor: colors.cardBackground,
                     },
+                    headerTintColor: colors.text,
                     headerShadowVisible: false,
                     headerRight: () =>
                         notifications.length > 0 ? (
@@ -72,7 +74,7 @@ export default function NotificationsScreen() {
                                 onPress={markAllAsRead}
                                 style={styles.headerButton}
                             >
-                                <CheckCheck size={20} color={Colors.light.tint} />
+                                <CheckCheck size={20} color={colors.tint} />
                             </TouchableOpacity>
                         ) : null,
                 }}
@@ -80,9 +82,9 @@ export default function NotificationsScreen() {
 
             {notifications.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                    <Bell size={64} color={Colors.light.border} />
-                    <Text style={styles.emptyTitle}>Aucune notification</Text>
-                    <Text style={styles.emptyText}>
+                    <Bell size={64} color={colors.border} />
+                    <Text style={[styles.emptyTitle, { color: colors.text }]}>Aucune notification</Text>
+                    <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                         Vous recevrez une notification ici à chaque nouvelle transaction
                         détectée.
                     </Text>
@@ -97,7 +99,8 @@ export default function NotificationsScreen() {
                         <TouchableOpacity
                             style={[
                                 styles.notificationCard,
-                                !item.read && styles.notificationCardUnread,
+                                { backgroundColor: colors.cardBackground, borderColor: colors.border },
+                                !item.read && { backgroundColor: `${colors.tint}08`, borderColor: colors.tint },
                             ]}
                             onPress={() => {
                                 markAsRead(item.id);
@@ -115,24 +118,25 @@ export default function NotificationsScreen() {
                                     <Text
                                         style={[
                                             styles.notificationTitle,
+                                            { color: colors.text },
                                             !item.read && styles.notificationTitleUnread,
                                         ]}
                                     >
                                         {item.title}
                                     </Text>
-                                    {!item.read && <View style={styles.unreadBadge} />}
+                                    {!item.read && <View style={[styles.unreadBadge, { backgroundColor: colors.tint }]} />}
                                 </View>
                                 <TouchableOpacity
                                     onPress={() => deleteNotification(item.id)}
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 >
-                                    <Trash2 size={16} color={Colors.light.textSecondary} />
+                                    <Trash2 size={16} color={colors.textSecondary} />
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.notificationMessage}>{item.message}</Text>
+                            <Text style={[styles.notificationMessage, { color: colors.textSecondary }]}>{item.message}</Text>
 
-                            <Text style={styles.notificationTime}>
+                            <Text style={[styles.notificationTime, { color: colors.textSecondary }]}>
                                 {formatTimestamp(item.timestamp)}
                             </Text>
                         </TouchableOpacity>
@@ -146,7 +150,6 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: Colors.light.cardBackground,
     },
     headerButton: {
         marginRight: 16,
@@ -159,15 +162,9 @@ const styles = StyleSheet.create({
         height: 12,
     },
     notificationCard: {
-        backgroundColor: Colors.light.cardBackground,
         borderRadius: 12,
         padding: 16,
         borderWidth: 1,
-        borderColor: Colors.light.border,
-    },
-    notificationCardUnread: {
-        backgroundColor: `${Colors.light.tint}08`,
-        borderColor: Colors.light.tint,
     },
     notificationHeader: {
         flexDirection: "row",
@@ -187,7 +184,6 @@ const styles = StyleSheet.create({
     notificationTitle: {
         fontSize: 16,
         fontWeight: "600",
-        color: Colors.light.text,
         flex: 1,
     },
     notificationTitleUnread: {
@@ -197,17 +193,14 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: Colors.light.tint,
     },
     notificationMessage: {
         fontSize: 14,
-        color: Colors.light.textSecondary,
         lineHeight: 20,
         marginBottom: 8,
     },
     notificationTime: {
         fontSize: 12,
-        color: Colors.light.textSecondary,
     },
     emptyContainer: {
         flex: 1,
@@ -218,13 +211,11 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 20,
         fontWeight: "700",
-        color: Colors.light.text,
         marginTop: 16,
         marginBottom: 8,
     },
     emptyText: {
         fontSize: 14,
-        color: Colors.light.textSecondary,
         textAlign: "center",
         lineHeight: 20,
     },

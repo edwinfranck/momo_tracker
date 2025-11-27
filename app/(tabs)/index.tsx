@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useSecurity } from "@/contexts/SecurityContext";
 import { useTransactions } from "@/contexts/TransactionsContext";
 import { useNotifications } from "@/contexts/NotificationsContext";
@@ -30,6 +30,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 
 export default function DashboardScreen() {
+  const { colors } = useTheme();
   const { stats, transactions } = useTransactions();
   const { formatAmount, hideAmounts, toggleHideAmounts } = useSecurity();
   const { unreadCount } = useNotifications();
@@ -51,20 +52,20 @@ export default function DashboardScreen() {
   };
 
   const getTransactionColor = (type: string) => {
-    const colors = Colors.light.categoryColors as any;
-    return colors[type] || Colors.light.info;
+    const categoryColors = colors.categoryColors as any;
+    return categoryColors[type] || colors.info;
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.cardBackground }]} edges={["bottom"]}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: "Tableau de bord",
           headerStyle: {
-            backgroundColor: Colors.light.background,
+            backgroundColor: colors.background,
           },
-          headerTintColor: Colors.light.text,
+          headerTintColor: colors.text,
           headerShadowVisible: false,
           headerTitleStyle: {
             fontWeight: "700" as const,
@@ -74,9 +75,9 @@ export default function DashboardScreen() {
               onPress={() => router.push("/notifications" as any)}
               style={styles.notificationButton}
             >
-              <Bell size={24} color={Colors.light.text} />
+              <Bell size={24} color={colors.text} />
               {unreadCount > 0 && (
-                <View style={styles.notificationBadge}>
+                <View style={[styles.notificationBadge, { backgroundColor: colors.error }]}>
                   <Text style={styles.notificationBadgeText}>
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </Text>
@@ -86,35 +87,35 @@ export default function DashboardScreen() {
           ),
         }}
       />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.balanceCard}>
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
+        <View style={[styles.balanceCard, { backgroundColor: colors.background }]}>
           <View style={styles.balanceHeader}>
-            <Text style={styles.balanceLabel}>Solde actuel</Text>
+            <Text style={[styles.balanceLabel, { color: colors.text }]}>Solde actuel</Text>
             <TouchableOpacity
               onPress={toggleHideAmounts}
               style={styles.eyeButton}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               {hideAmounts ? (
-                <EyeOff size={20} color={Colors.light.text} opacity={0.6} />
+                <EyeOff size={20} color={colors.text} opacity={0.6} />
               ) : (
-                <Eye size={20} color={Colors.light.text} opacity={0.6} />
+                <Eye size={20} color={colors.text} opacity={0.6} />
               )}
             </TouchableOpacity>
           </View>
-          <Text style={styles.balanceAmount}>
+          <Text style={[styles.balanceAmount, { color: colors.text }]}>
             {formatCurrency(stats.currentBalance)}
           </Text>
           <View style={styles.balanceStats}>
             <View style={styles.balanceStat}>
-              <ArrowUpCircle size={16} color={Colors.light.income} />
-              <Text style={styles.balanceStatText}>
+              <ArrowUpCircle size={16} color={colors.income} />
+              <Text style={[styles.balanceStatText, { color: colors.text }]}>
                 {stats.receivedCount} reçus
               </Text>
             </View>
             <View style={styles.balanceStat}>
-              <ArrowDownCircle size={16} color={Colors.light.expense} />
-              <Text style={styles.balanceStatText}>
+              <ArrowDownCircle size={16} color={colors.expense} />
+              <Text style={[styles.balanceStatText, { color: colors.text }]}>
                 {stats.sentCount} envoyés
               </Text>
             </View>
@@ -122,42 +123,42 @@ export default function DashboardScreen() {
         </View>
 
         <View style={styles.statsGrid}>
-          <View style={[styles.statCard, styles.incomeCard]}>
+          <View style={[styles.statCard, styles.incomeCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.income }]}>
             <View style={styles.statIconContainer}>
-              <TrendingUp size={24} color={Colors.light.income} />
+              <TrendingUp size={24} color={colors.income} />
             </View>
-            <Text style={styles.statLabel}>Total reçu</Text>
-            <Text style={[styles.statValue, styles.incomeText]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total reçu</Text>
+            <Text style={[styles.statValue, { color: colors.income }]}>
               {formatCurrency(stats.totalReceived)}
             </Text>
           </View>
 
-          <View style={[styles.statCard, styles.expenseCard]}>
+          <View style={[styles.statCard, styles.expenseCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.expense }]}>
             <View style={styles.statIconContainer}>
-              <TrendingDown size={24} color={Colors.light.expense} />
+              <TrendingDown size={24} color={colors.expense} />
             </View>
-            <Text style={styles.statLabel}>Total envoyé</Text>
-            <Text style={[styles.statValue, styles.expenseText]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total envoyé</Text>
+            <Text style={[styles.statValue, { color: colors.expense }]}>
               {formatCurrency(stats.totalSent)}
             </Text>
           </View>
 
-          <View style={[styles.statCard, styles.feesCard]}>
+          <View style={[styles.statCard, styles.feesCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.warning }]}>
             <View style={styles.statIconContainer}>
-              <DollarSign size={24} color={Colors.light.warning} />
+              <DollarSign size={24} color={colors.warning} />
             </View>
-            <Text style={styles.statLabel}>Total frais</Text>
-            <Text style={[styles.statValue, styles.feesText]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total frais</Text>
+            <Text style={[styles.statValue, { color: colors.warning }]}>
               {formatCurrency(stats.totalFees)}
             </Text>
           </View>
 
-          <View style={[styles.statCard, styles.countCard]}>
+          <View style={[styles.statCard, styles.countCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.info }]}>
             <View style={styles.statIconContainer}>
-              <Receipt size={24} color={Colors.light.info} />
+              <Receipt size={24} color={colors.info} />
             </View>
-            <Text style={styles.statLabel}>Transactions</Text>
-            <Text style={[styles.statValue, styles.countText]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Transactions</Text>
+            <Text style={[styles.statValue, { color: colors.info }]}>
               {stats.transactionCount}
             </Text>
           </View>
@@ -165,19 +166,19 @@ export default function DashboardScreen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Transactions récentes</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Transactions récentes</Text>
             <TouchableOpacity onPress={() => router.push("/transactions" as any)}>
-              <Text style={styles.seeAllText}>Voir tout</Text>
+              <Text style={[styles.seeAllText, { color: colors.tint }]}>Voir tout</Text>
             </TouchableOpacity>
           </View>
 
           {recentTransactions.length === 0 ? (
             <View style={styles.emptyState}>
-              <Wallet size={48} color={Colors.light.tabIconDefault} />
-              <Text style={styles.emptyStateText}>
+              <Wallet size={48} color={colors.tabIconDefault} />
+              <Text style={[styles.emptyStateText, { color: colors.text }]}>
                 Aucune transaction trouvée
               </Text>
-              <Text style={styles.emptyStateSubtext}>
+              <Text style={[styles.emptyStateSubtext, { color: colors.textSecondary }]}>
                 Synchronisez vos SMS MTN MoMo pour commencer
               </Text>
             </View>
@@ -186,7 +187,7 @@ export default function DashboardScreen() {
               {recentTransactions.map((transaction) => (
                 <TouchableOpacity
                   key={transaction.id}
-                  style={styles.transactionItem}
+                  style={[styles.transactionItem, { backgroundColor: colors.cardBackground }]}
                   onPress={() =>
                     router.push(`/transaction/${transaction.id}` as any)
                   }
@@ -209,13 +210,13 @@ export default function DashboardScreen() {
                     />
                   </View>
                   <View style={styles.transactionContent}>
-                    <Text style={styles.transactionType}>
+                    <Text style={[styles.transactionType, { color: colors.text }]}>
                       {TransactionTypeLabels[transaction.type]}
                     </Text>
-                    <Text style={styles.transactionCounterparty}>
+                    <Text style={[styles.transactionCounterparty, { color: colors.textSecondary }]}>
                       {transaction.counterparty}
                     </Text>
-                    <Text style={styles.transactionDate}>
+                    <Text style={[styles.transactionDate, { color: colors.textSecondary }]}>
                       {formatDate(transaction.date)}
                     </Text>
                   </View>
@@ -228,8 +229,8 @@ export default function DashboardScreen() {
                             transaction.type === "transfer_received" ||
                               transaction.type === "deposit" ||
                               transaction.type === "uemoa_received"
-                              ? Colors.light.income
-                              : Colors.light.expense,
+                              ? colors.income
+                              : colors.expense,
                         },
                       ]}
                     >
@@ -254,14 +255,11 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   balanceCard: {
-    backgroundColor: Colors.light.background,
     margin: 16,
     padding: 24,
     borderRadius: 1,
@@ -273,14 +271,12 @@ const styles = StyleSheet.create({
   },
   balanceLabel: {
     fontSize: 14,
-    color: Colors.light.text,
     opacity: 0.8,
     fontWeight: "500" as const,
   },
   balanceAmount: {
     fontSize: 36,
     fontWeight: "700" as const,
-    color: Colors.light.text,
     marginTop: 8,
   },
   balanceStats: {
@@ -295,7 +291,6 @@ const styles = StyleSheet.create({
   },
   balanceStatText: {
     fontSize: 13,
-    color: Colors.light.text,
     fontWeight: "500" as const,
   },
   statsGrid: {
@@ -306,7 +301,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     width: (width - 44) / 2,
-    backgroundColor: Colors.light.cardBackground,
     padding: 16,
     borderRadius: 1,
     shadowColor: "#000",
@@ -317,26 +311,21 @@ const styles = StyleSheet.create({
   },
   incomeCard: {
     borderLeftWidth: 4,
-    borderLeftColor: Colors.light.income,
   },
   expenseCard: {
     borderLeftWidth: 4,
-    borderLeftColor: Colors.light.expense,
   },
   feesCard: {
     borderLeftWidth: 4,
-    borderLeftColor: Colors.light.warning,
   },
   countCard: {
     borderLeftWidth: 4,
-    borderLeftColor: Colors.light.info,
   },
   statIconContainer: {
     marginBottom: 8,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
     fontWeight: "500" as const,
   },
   statValue: {
@@ -345,16 +334,16 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   incomeText: {
-    color: Colors.light.income,
+    // color set dynamically
   },
   expenseText: {
-    color: Colors.light.expense,
+    // color set dynamically
   },
   feesText: {
-    color: Colors.light.warning,
+    // color set dynamically
   },
   countText: {
-    color: Colors.light.info,
+    // color set dynamically
   },
   section: {
     marginTop: 24,
@@ -369,11 +358,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "700" as const,
-    color: Colors.light.text,
   },
   seeAllText: {
     fontSize: 14,
-    color: Colors.light.tint,
     fontWeight: "600" as const,
   },
   emptyState: {
@@ -384,12 +371,10 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: "600" as const,
-    color: Colors.light.text,
     marginTop: 16,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
     textAlign: "center",
     marginTop: 8,
   },
@@ -400,7 +385,6 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.cardBackground,
     padding: 16,
     borderRadius: 1,
     shadowColor: "#000",
@@ -423,11 +407,9 @@ const styles = StyleSheet.create({
   transactionType: {
     fontSize: 15,
     fontWeight: "600" as const,
-    color: Colors.light.text,
   },
   transactionCounterparty: {
     fontSize: 13,
-    color: Colors.light.textSecondary,
     marginTop: 2,
   },
   balanceHeader: {
@@ -440,7 +422,6 @@ const styles = StyleSheet.create({
   },
   transactionDate: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
     marginTop: 2,
   },
   transactionAmount: {
@@ -459,7 +440,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 4,
     right: 4,
-    backgroundColor: Colors.light.error,
     borderRadius: 10,
     minWidth: 18,
     height: 18,
