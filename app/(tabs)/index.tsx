@@ -16,7 +16,7 @@ import {
   EyeOff,
   Bell,
 } from "lucide-react-native";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dimensions,
   ScrollView,
@@ -24,17 +24,22 @@ import {
   Text,
   TouchableOpacity,
   View,
+  RefreshControl,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { readMTNMoMoSMS } from "@/utils/smsReader";
+import { hasAllPermissions, requestAllPermissions } from "@/utils/permissionsService";
 
 const { width } = Dimensions.get("window");
 
 export default function DashboardScreen() {
   const { colors } = useTheme();
-  const { stats, transactions } = useTransactions();
+  const { stats, transactions, parseSMSMessages } = useTransactions();
   const { formatAmount, hideAmounts, toggleHideAmounts } = useSecurity();
   const { unreadCount } = useNotifications();
   const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
 
   const recentTransactions = transactions.slice(0, 5);
 
@@ -54,6 +59,63 @@ export default function DashboardScreen() {
   const getTransactionColor = (type: string) => {
     const categoryColors = colors.categoryColors as any;
     return categoryColors[type] || colors.info;
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    try {
+      // Vérifier les permissions
+      const hasPermission = await hasAllPermissions();
+
+      if (!hasPermission) {
+        const granted = await requestAllPermissions();
+        if (!granted) {
+          Alert.alert(
+            'Permissions requises',
+            'L\'application a besoin de lire vos SMS et d\'envoyer des notifications pour synchroniser vos transactions MTN MoMo.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+      }
+
+      // Lire les SMS des 30 derniers jours
+      const messages = await readMTNMoMoSMS(200, 30);
+
+      if (messages.length > 0) {
+        const count = parseSMSMessages(messages);
+
+        if (count > 0) {
+          Alert.alert(
+            'Synchronisation réussie',
+            `${count} nouvelle${count !== 1 ? 's' : ''} transaction${count !== 1 ? 's' : ''} importée${count !== 1 ? 's' : ''}.`,
+            [{ text: 'OK' }]
+          );
+        } else {
+          Alert.alert(
+            'Synchronisation terminée',
+            'Aucune nouvelle transaction trouvée.',
+            [{ text: 'OK' }]
+          );
+        }
+      } else {
+        Alert.alert(
+          'Aucun SMS trouvé',
+          'Aucun SMS MTN MoMo trouvé dans les 30 derniers jours.',
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      console.error('Erreur lors de la synchronisation:', error);
+      Alert.alert(
+        'Erreur',
+        'Une erreur est survenue lors de la synchronisation.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return (
@@ -87,7 +149,20 @@ export default function DashboardScreen() {
           ),
         }}
       />
-      <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.tint]}
+            tintColor={colors.tint}
+            title="Synchronisation..."
+            titleColor={colors.textSecondary}
+          />
+        }
+      >
         <View style={[styles.balanceCard, { backgroundColor: colors.background }]}>
           <View style={styles.balanceHeader}>
             <Text style={[styles.balanceLabel, { color: colors.text }]}>Solde actuel</Text>

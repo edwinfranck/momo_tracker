@@ -23,7 +23,10 @@ export default function TermsAndConditions({
     const { acceptTerms } = useOnboarding();
 
     const handleAccept = () => {
+        // Accepter d'abord les termes
         acceptTerms();
+
+        // Appeler le callback si fourni
         onAccept?.();
     };
 

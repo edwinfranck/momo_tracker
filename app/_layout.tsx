@@ -1,11 +1,13 @@
 import LockScreen from "@/components/LockScreen";
 import OnboardingScreen from "@/components/OnboardingScreen";
+import PermissionsScreen from "@/components/PermissionsScreen";
 import TermsAndConditions from "@/components/TermsAndConditions";
 import { OnboardingProvider, useOnboarding } from "@/contexts/OnboardingContext";
 import { SecurityProvider, useSecurity } from "@/contexts/SecurityContext";
 import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { AutoSyncProvider } from "@/contexts/AutoSyncContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -23,10 +25,12 @@ function RootLayoutNav() {
   const {
     areTermsAccepted,
     isOnboardingCompleted,
-    isLoading: onboardingLoading
+    arePermissionsRequested,
+    isLoading: onboardingLoading,
+    markPermissionsRequested,
   } = useOnboarding();
 
-   const { colors, activeColorScheme } = useTheme();
+  const { colors, activeColorScheme } = useTheme();
 
   // Show loading while checking onboarding status
   if (onboardingLoading) {
@@ -37,22 +41,27 @@ function RootLayoutNav() {
     );
   }
 
-  // Show Onboarding if not completed
+  // 1. Show Permissions Screen FIRST (before onboarding)
+  if (!arePermissionsRequested) {
+    return <PermissionsScreen onComplete={markPermissionsRequested} />;
+  }
+
+  // 2. Show Onboarding if not completed
   if (!isOnboardingCompleted) {
     return <OnboardingScreen />;
   }
 
-  // Show Terms and Conditions if not accepted
+  // 3. Show Terms and Conditions if not accepted
   if (!areTermsAccepted) {
     return <TermsAndConditions />;
   }
 
-  // Show lock screen if security is enabled and not authenticated
+  // 4. Show lock screen if security is enabled and not authenticated
   if (isSecurityEnabled && !isAuthenticated) {
     return <LockScreen />;
   }
 
- 
+
 
   return (
     <>
@@ -102,9 +111,11 @@ export default function RootLayout() {
           <ThemeProvider>
             <NotificationsProvider>
               <TransactionsProvider>
-                <GestureHandlerRootView>
-                  <RootLayoutNav />
-                </GestureHandlerRootView>
+                <AutoSyncProvider>
+                  <GestureHandlerRootView>
+                    <RootLayoutNav />
+                  </GestureHandlerRootView>
+                </AutoSyncProvider>
               </TransactionsProvider>
             </NotificationsProvider>
           </ThemeProvider>

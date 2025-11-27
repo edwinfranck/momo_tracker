@@ -2,7 +2,6 @@ import { Transaction, TransactionStats, TransactionType } from "@/types/transact
 import { SMSMessage } from "@/utils/smsReader";
 import { parseMTNMoMoSMS } from "@/utils/smsParser";
 import { startSMSListener, stopSMSListener } from "@/utils/smsListener";
-import { showTransactionNotification } from "@/utils/notificationService";
 import { useNotifications } from "@/contexts/NotificationsContext";
 import createContextHook from "@nkzw/create-context-hook";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -88,11 +87,6 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
           if (!exists) {
             // Ajouter la transaction
             addTransaction(result.transaction);
-
-            // Afficher la notification native
-            showTransactionNotification(result.transaction).catch(err => {
-              console.error('Erreur lors de l\'affichage de la notification:', err);
-            });
 
             // Ajouter la notification in-app
             let title = "Nouvelle transaction";
