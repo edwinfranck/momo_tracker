@@ -1,5 +1,6 @@
 import Colors from "@/constants/colors";
 import { PeriodFilter, SortBy, useTransactions } from "@/contexts/TransactionsContext";
+import { useSecurity } from "@/contexts/SecurityContext";
 import {
   Transaction,
   TransactionCategories,
@@ -45,6 +46,7 @@ export default function TransactionsScreen() {
     sortBy,
     setSortBy,
   } = useTransactions();
+  const { formatAmount } = useSecurity();
   const router = useRouter();
   const [showFilters, setShowFilters] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -54,7 +56,7 @@ export default function TransactionsScreen() {
   const [maxAmountInput, setMaxAmountInput] = useState("");
 
   const formatCurrency = (amount: number) => {
-    return `${amount.toLocaleString("fr-FR")} FCFA`;
+    return formatAmount(amount);
   };
 
   const formatDate = (date: Date) => {

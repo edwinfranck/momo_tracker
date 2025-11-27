@@ -1,4 +1,5 @@
 import Colors from "@/constants/colors";
+import { useSecurity } from "@/contexts/SecurityContext";
 import { useTransactions } from "@/contexts/TransactionsContext";
 import { TransactionTypeLabels } from "@/types/transaction";
 import { Stack, useRouter } from "expo-router";
@@ -26,12 +27,13 @@ const { width } = Dimensions.get("window");
 
 export default function DashboardScreen() {
   const { stats, transactions } = useTransactions();
+  const { formatAmount } = useSecurity();
   const router = useRouter();
 
   const recentTransactions = transactions.slice(0, 5);
 
   const formatCurrency = (amount: number) => {
-    return `${amount.toLocaleString("fr-FR")} FCFA`;
+    return formatAmount(amount);
   };
 
   const formatDate = (date: Date) => {

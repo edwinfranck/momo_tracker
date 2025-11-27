@@ -1,13 +1,23 @@
 import Colors from "@/constants/colors";
+import { useSecurity } from "@/contexts/SecurityContext";
 import { useTransactions } from "@/contexts/TransactionsContext";
 import { Stack } from "expo-router";
-import { AlertCircle, RefreshCw, Trash2 } from "lucide-react-native";
+import {
+  AlertCircle,
+  RefreshCw,
+  Trash2,
+  Lock,
+  Eye,
+  EyeOff,
+  Shield
+} from "lucide-react-native";
 import React, { useState } from "react";
 import {
   Alert,
   Platform,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -22,6 +32,13 @@ export default function SettingsScreen() {
     isSaving,
     stats,
   } = useTransactions();
+  const {
+    isSecurityEnabled,
+    hideAmounts,
+    isBiometricSupported,
+    toggleSecurity,
+    toggleHideAmounts,
+  } = useSecurity();
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<Date | null>(null);
 
@@ -108,6 +125,22 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleToggleSecurity = async (enabled: boolean) => {
+    const result = await toggleSecurity(enabled);
+    if (!result.success) {
+      Alert.alert(
+        "Erreur",
+        result.message || "Impossible d'activer la sécurité"
+      );
+    } else if (enabled) {
+      Alert.alert(
+        "Sécurité activée",
+        "Votre application est maintenant protégée par authentification biométrique ou code PIN."
+      );
+    }
+  };
+
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <Stack.Screen
@@ -165,6 +198,76 @@ export default function SettingsScreen() {
                 {Platform.OS === "ios"
                   ? "La lecture de SMS n'est pas disponible sur iOS pour des raisons de sécurité."
                   : "La lecture de SMS n'est disponible que sur Android."}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Security & Privacy Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Sécurité & Confidentialité</Text>
+          <View style={styles.card}>
+            {/* App Lock Toggle */}
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <View style={styles.settingIconContainer}>
+                  <Lock size={20} color={Colors.light.tint} />
+                </View>
+                <View style={styles.settingTextContainer}>
+                  <Text style={styles.settingLabel}>Verrouillage de l'app</Text>
+                  <Text style={styles.settingDescription}>
+                    {isBiometricSupported
+                      ? "Empreinte digitale ou Code PIN"
+                      : "Code PIN du téléphone"}
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={isSecurityEnabled}
+                onValueChange={handleToggleSecurity}
+                trackColor={{
+                  false: Colors.light.border,
+                  true: Colors.light.tint,
+                }}
+                thumbColor={Colors.light.cardBackground}
+              />
+            </View>
+
+            {/* Hide Amounts Toggle */}
+            <View style={[styles.settingRow, styles.settingRowLast]}>
+              <View style={styles.settingLeft}>
+                <View style={styles.settingIconContainer}>
+                  {hideAmounts ? (
+                    <EyeOff size={20} color={Colors.light.tint} />
+                  ) : (
+                    <Eye size={20} color={Colors.light.tint} />
+                  )}
+                </View>
+                <View style={styles.settingTextContainer}>
+                  <Text style={styles.settingLabel}>Masquer les montants</Text>
+                  <Text style={styles.settingDescription}>
+                    Afficher ••••••  au lieu des montants
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={hideAmounts}
+                onValueChange={toggleHideAmounts}
+                trackColor={{
+                  false: Colors.light.border,
+                  true: Colors.light.tint,
+                }}
+                thumbColor={Colors.light.cardBackground}
+              />
+            </View>
+          </View>
+
+          {!isBiometricSupported && Platform.OS === "android" && (
+            <View style={styles.infoCard}>
+              <Shield size={16} color={Colors.light.info} />
+              <Text style={styles.infoCardText}>
+                L'authentification biométrique n'est pas configurée sur cet appareil.
+                Le code PIN du téléphone sera utilisé.
               </Text>
             </View>
           )}
@@ -334,5 +437,59 @@ const styles = StyleSheet.create({
   versionText: {
     marginTop: 12,
     fontWeight: "500" as const,
+  },
+  // Security Settings Styles
+  settingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+  },
+  settingRowLast: {
+    borderBottomWidth: 0,
+  },
+  settingLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 12,
+  },
+  settingIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: `${Colors.light.tint}15`,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  settingTextContainer: {
+    flex: 1,
+  },
+  settingLabel: {
+    fontSize: 15,
+    fontWeight: "600" as const,
+    color: Colors.light.text,
+    marginBottom: 2,
+  },
+  settingDescription: {
+    fontSize: 12,
+    color: Colors.light.textSecondary,
+  },
+  infoCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: `${Colors.light.info}15`,
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    gap: 8,
+  },
+  infoCardText: {
+    flex: 1,
+    fontSize: 12,
+    color: Colors.light.info,
+    lineHeight: 18,
   },
 });
