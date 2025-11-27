@@ -11,6 +11,8 @@ import {
   TrendingDown,
   TrendingUp,
   Wallet,
+  Eye,
+  EyeOff,
 } from "lucide-react-native";
 import React from "react";
 import {
@@ -27,7 +29,7 @@ const { width } = Dimensions.get("window");
 
 export default function DashboardScreen() {
   const { stats, transactions } = useTransactions();
-  const { formatAmount } = useSecurity();
+  const { formatAmount, hideAmounts, toggleHideAmounts } = useSecurity();
   const router = useRouter();
 
   const recentTransactions = transactions.slice(0, 5);
@@ -68,7 +70,20 @@ export default function DashboardScreen() {
       />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>Solde actuel</Text>
+          <View style={styles.balanceHeader}>
+            <Text style={styles.balanceLabel}>Solde actuel</Text>
+            <TouchableOpacity
+              onPress={toggleHideAmounts}
+              style={styles.eyeButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              {hideAmounts ? (
+                <EyeOff size={20} color={Colors.light.text} opacity={0.6} />
+              ) : (
+                <Eye size={20} color={Colors.light.text} opacity={0.6} />
+              )}
+            </TouchableOpacity>
+          </View>
           <Text style={styles.balanceAmount}>
             {formatCurrency(stats.currentBalance)}
           </Text>
@@ -396,6 +411,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.light.textSecondary,
     marginTop: 2,
+  },
+  balanceHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  eyeButton: {
+    padding: 4,
   },
   transactionDate: {
     fontSize: 12,
