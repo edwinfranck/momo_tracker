@@ -49,6 +49,36 @@ export default function TransactionsScreen() {
     return colors[type] || Colors.light.info;
   };
 
+  // Calculate totals based on filtered transactions
+  const calculateTotals = () => {
+    let totalReceived = 0;
+    let totalSent = 0;
+    let totalFees = 0;
+
+    filteredTransactions.forEach((transaction) => {
+      const isIncome =
+        transaction.type === "transfer_received" ||
+        transaction.type === "deposit" ||
+        transaction.type === "uemoa_received";
+
+      if (isIncome) {
+        totalReceived += transaction.amount;
+      } else {
+        totalSent += transaction.amount;
+      }
+      totalFees += transaction.fee;
+    });
+
+    return {
+      totalReceived,
+      totalSent,
+      totalFees,
+      netBalance: totalReceived - totalSent - totalFees,
+    };
+  };
+
+  const totals = calculateTotals();
+
   const renderTransaction = ({ item }: { item: Transaction }) => {
     const isIncome =
       item.type === "transfer_received" ||
@@ -184,6 +214,67 @@ export default function TransactionsScreen() {
           {filteredTransactions.length} transaction
           {filteredTransactions.length !== 1 ? "s" : ""}
         </Text>
+
+        {filteredTransactions.length > 0 && (
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryTitle}>Résumé</Text>
+            <View style={styles.summaryContent}>
+              {(filterType === "all" ||
+                filterType === "transfer_received" ||
+                filterType === "deposit" ||
+                filterType === "uemoa_received") && (
+                  <View style={styles.summaryRow}>
+                    <Text style={styles.summaryLabel}>Total reçu</Text>
+                    <Text style={[styles.summaryValue, styles.incomeText]}>
+                      +{formatCurrency(totals.totalReceived)}
+                    </Text>
+                  </View>
+                )}
+              {(filterType === "all" ||
+                filterType === "transfer_sent" ||
+                filterType === "withdrawal" ||
+                filterType === "payment" ||
+                filterType === "uemoa_sent") && (
+                  <View style={styles.summaryRow}>
+                    <Text style={styles.summaryLabel}>Total envoyé</Text>
+                    <Text style={[styles.summaryValue, styles.expenseText]}>
+                      -{formatCurrency(totals.totalSent)}
+                    </Text>
+                  </View>
+                )}
+              {totals.totalFees > 0 && (
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>Frais totaux</Text>
+                  <Text style={styles.summaryValue}>
+                    {formatCurrency(totals.totalFees)}
+                  </Text>
+                </View>
+              )}
+              {filterType === "all" && (
+                <View style={[styles.summaryRow, styles.netBalanceRow]}>
+                  <Text style={[styles.summaryLabel, styles.netBalanceLabel]}>
+                    Solde net
+                  </Text>
+                  <Text
+                    style={[
+                      styles.summaryValue,
+                      styles.netBalanceValue,
+                      {
+                        color:
+                          totals.netBalance >= 0
+                            ? Colors.light.income
+                            : Colors.light.expense,
+                      },
+                    ]}
+                  >
+                    {totals.netBalance >= 0 ? "+" : ""}
+                    {formatCurrency(Math.abs(totals.netBalance))}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
 
         <FlatList
           data={filteredTransactions}
@@ -355,5 +446,63 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
     textAlign: "center",
     marginTop: 8,
+  },
+  summaryCard: {
+    backgroundColor: Colors.light.cardBackground,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  summaryTitle: {
+    fontSize: 16,
+    fontWeight: "600" as const,
+    color: Colors.light.text,
+    marginBottom: 12,
+  },
+  summaryContent: {
+    gap: 8,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 6,
+  },
+  summaryLabel: {
+    fontSize: 14,
+    color: Colors.light.textSecondary,
+    fontWeight: "500" as const,
+  },
+  summaryValue: {
+    fontSize: 15,
+    fontWeight: "600" as const,
+    color: Colors.light.text,
+  },
+  incomeText: {
+    color: Colors.light.income,
+  },
+  expenseText: {
+    color: Colors.light.expense,
+  },
+  netBalanceRow: {
+    borderTopWidth: 1,
+    borderTopColor: `${Colors.light.textSecondary}20`,
+    marginTop: 8,
+    paddingTop: 12,
+  },
+  netBalanceLabel: {
+    fontSize: 15,
+    fontWeight: "600" as const,
+    color: Colors.light.text,
+  },
+  netBalanceValue: {
+    fontSize: 18,
+    fontWeight: "700" as const,
   },
 });
