@@ -4,6 +4,7 @@ import TermsAndConditions from "@/components/TermsAndConditions";
 import { OnboardingProvider, useOnboarding } from "@/contexts/OnboardingContext";
 import { SecurityProvider, useSecurity } from "@/contexts/SecurityContext";
 import { TransactionsProvider } from "@/contexts/TransactionsContext";
+import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -57,6 +58,13 @@ function RootLayoutNav() {
           presentation: "card"
         }}
       />
+      <Stack.Screen
+        name="notifications"
+        options={{
+          title: "Notifications",
+          presentation: "card"
+        }}
+      />
     </Stack>
   );
 }
@@ -70,11 +78,13 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <OnboardingProvider>
         <SecurityProvider>
-          <TransactionsProvider>
-            <GestureHandlerRootView>
-              <RootLayoutNav />
-            </GestureHandlerRootView>
-          </TransactionsProvider>
+          <NotificationsProvider>
+            <TransactionsProvider>
+              <GestureHandlerRootView>
+                <RootLayoutNav />
+              </GestureHandlerRootView>
+            </TransactionsProvider>
+          </NotificationsProvider>
         </SecurityProvider>
       </OnboardingProvider>
     </QueryClientProvider>

@@ -1,6 +1,7 @@
 import Colors from "@/constants/colors";
 import { useSecurity } from "@/contexts/SecurityContext";
 import { useTransactions } from "@/contexts/TransactionsContext";
+import { useNotifications } from "@/contexts/NotificationsContext";
 import { TransactionTypeLabels } from "@/types/transaction";
 import { Stack, useRouter } from "expo-router";
 import {
@@ -13,6 +14,7 @@ import {
   Wallet,
   Eye,
   EyeOff,
+  Bell,
 } from "lucide-react-native";
 import React from "react";
 import {
@@ -30,6 +32,7 @@ const { width } = Dimensions.get("window");
 export default function DashboardScreen() {
   const { stats, transactions } = useTransactions();
   const { formatAmount, hideAmounts, toggleHideAmounts } = useSecurity();
+  const { unreadCount } = useNotifications();
   const router = useRouter();
 
   const recentTransactions = transactions.slice(0, 5);
@@ -66,6 +69,21 @@ export default function DashboardScreen() {
           headerTitleStyle: {
             fontWeight: "700" as const,
           },
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => router.push("/notifications" as any)}
+              style={styles.notificationButton}
+            >
+              <Bell size={24} color={Colors.light.text} />
+              {unreadCount > 0 && (
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.notificationBadgeText}>
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ),
         }}
       />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -430,6 +448,28 @@ const styles = StyleSheet.create({
   },
   transactionAmountText: {
     fontSize: 16,
+    fontWeight: "700" as const,
+  },
+  notificationButton: {
+    marginRight: 16,
+    padding: 8,
+    position: "relative",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    backgroundColor: Colors.light.error,
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+  },
+  notificationBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 10,
     fontWeight: "700" as const,
   },
 });

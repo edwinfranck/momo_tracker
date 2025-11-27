@@ -1,10 +1,14 @@
 import { Transaction, TransactionStats, TransactionType } from "@/types/transaction";
 import { SMSMessage } from "@/utils/smsReader";
 import { parseMTNMoMoSMS } from "@/utils/smsParser";
+import { startSMSListener, stopSMSListener } from "@/utils/smsListener";
+import { showTransactionNotification } from "@/utils/notificationService";
+import { useNotifications } from "@/contexts/NotificationsContext";
 import createContextHook from "@nkzw/create-context-hook";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
+import { Platform } from "react-native";
 
 const STORAGE_KEY = "@mtn_momo_transactions";
 
@@ -37,6 +41,7 @@ export type PeriodFilter = "all" | "today" | "7days" | "30days" | "3months" | "6
 export type SortBy = "date_desc" | "date_asc" | "amount_desc" | "amount_asc";
 
 export const [TransactionsProvider, useTransactions] = createContextHook(() => {
+  const { addNotification } = useNotifications();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<TransactionType | "all">("all");
@@ -61,6 +66,89 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
       setTransactions(transactionsQuery.data);
     }
   }, [transactionsQuery.data]);
+
+  // Démarrer le listener SMS automatiquement au montage du composant
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      console.log('🚀 Initialisation du listener SMS automatique...');
+
+      // Handler pour les nouveaux SMS
+      const handleNewSMS = async (sms: SMSMessage) => {
+        console.log('📨 Nouveau SMS MTN MoMo détecté!');
+
+        // Parser le SMS
+        const result = parseMTNMoMoSMS(sms.body, sms.date);
+
+        if (result.success && result.transaction) {
+          console.log('✅ Transaction parsée avec succès:', result.transaction);
+
+          // Vérifier que la transaction n'existe pas déjà
+          const exists = transactions.some(t => t.id === result.transaction!.id);
+
+          if (!exists) {
+            // Ajouter la transaction
+            addTransaction(result.transaction);
+
+            // Afficher la notification native
+            showTransactionNotification(result.transaction).catch(err => {
+              console.error('Erreur lors de l\'affichage de la notification:', err);
+            });
+
+            // Ajouter la notification in-app
+            let title = "Nouvelle transaction";
+            let emoji = "💳";
+
+            switch (result.transaction.type) {
+              case 'withdrawal':
+                title = "Retrait effectué";
+                emoji = "💸";
+                break;
+              case 'deposit':
+                title = "Dépôt reçu";
+                emoji = "💰";
+                break;
+              case 'transfer_received':
+                title = "Transfert reçu";
+                emoji = "📥";
+                break;
+              case 'transfer_sent':
+                title = "Transfert envoyé";
+                emoji = "📤";
+                break;
+              case 'payment':
+              case 'payment_bill':
+              case 'payment_bundle':
+              case 'payment_p2m':
+                title = "Paiement effectué";
+                emoji = "🛒";
+                break;
+            }
+
+            addNotification({
+              type: "transaction",
+              title: `${emoji} ${title}`,
+              message: `${result.transaction.amount.toLocaleString('fr-FR')} FCFA • ${result.transaction.counterparty}`,
+              transactionId: result.transaction.id,
+              transaction: result.transaction
+            });
+          } else {
+            console.log('ℹ️ Transaction déjà existante, ignorée');
+          }
+        } else {
+          console.warn('⚠️ Échec du parsing du SMS:', result.error);
+        }
+      };
+
+      // Démarrer le listener
+      startSMSListener(handleNewSMS);
+
+      // Nettoyer le listener au démontage
+      return () => {
+        console.log('🛑 Arrêt du listener SMS');
+        stopSMSListener();
+      };
+    }
+  }, [transactions]); // Dépendance sur transactions pour vérifier les doublons
 
   const addTransaction = (transaction: Transaction) => {
     console.log("Adding transaction:", transaction);

@@ -11,7 +11,8 @@ import {
   EyeOff,
   Shield,
   FileText,
-  ChevronRight
+  ChevronRight,
+  Bell
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -202,6 +203,68 @@ export default function SettingsScreen() {
                   ? "La lecture de SMS n'est pas disponible sur iOS pour des raisons de sécurité."
                   : "La lecture de SMS n'est disponible que sur Android."}
               </Text>
+            </View>
+          )}
+
+          {Platform.OS === "android" && (
+            <View style={styles.infoCard}>
+              <Shield size={16} color={Colors.light.success} />
+              <Text style={styles.infoCardText}>
+                ✅ Synchronisation automatique activée ! Les nouvelles transactions
+                MTN MoMo seront détectées en temps réel et vous recevrez une notification.
+              </Text>
+            </View>
+          )}
+
+          {/* Test Notification Button */}
+          {Platform.OS === "android" && (
+            <View style={{ gap: 12 }}>
+              <TouchableOpacity
+                style={[styles.button, styles.testButton]}
+                onPress={async () => {
+                  try {
+                    const { showTransactionNotification } = await import("@/utils/notificationService");
+                    const testTransaction = {
+                      id: "test-" + Date.now(),
+                      type: "withdrawal" as const,
+                      amount: 5000,
+                      fee: 0,
+                      balance: 45000,
+                      counterparty: "Test ATM",
+                      date: new Date(),
+                      transactionId: "TEST123",
+                      rawMessage: "Test notification",
+                    };
+                    await showTransactionNotification(testTransaction);
+                    Alert.alert("Test envoyé", "Vérifiez votre barre de notification !");
+                  } catch (error) {
+                    console.error("Erreur test notification:", error);
+                    Alert.alert("Erreur", "Impossible d'afficher la notification de test");
+                  }
+                }}
+              >
+                <AlertCircle size={20} color={Colors.light.info} />
+                <Text style={styles.testButtonText}>
+                  Tester notif native
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, styles.testButton]}
+                onPress={async () => {
+                  // Ce test est un peu plus complexe car on a besoin du contexte
+                  // On va juste afficher une alerte pour dire d'utiliser le dashboard
+                  Alert.alert(
+                    "Test In-App",
+                    "Pour tester les notifications in-app, envoyez un SMS de test ou attendez une transaction réelle. Vous verrez la cloche sonner sur l'accueil !"
+                  );
+                }}
+              >
+                <Bell size={20} color={Colors.light.info} />
+                <Text style={styles.testButtonText}>
+                  Info notif in-app
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -545,5 +608,15 @@ const styles = StyleSheet.create({
   aboutContent: {
     padding: 16,
     paddingTop: 0,
+  },
+  testButton: {
+    backgroundColor: `${Colors.light.info}20`,
+    borderWidth: 1,
+    borderColor: Colors.light.info,
+  },
+  testButtonText: {
+    fontSize: 16,
+    fontWeight: "600" as const,
+    color: Colors.light.info,
   },
 });

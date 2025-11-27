@@ -23,7 +23,9 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.edwind4.momo",
       "permissions": [
-        "READ_SMS"
+        "READ_SMS",
+        "RECEIVE_SMS",
+        "POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -43,7 +45,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,
