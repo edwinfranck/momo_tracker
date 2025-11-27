@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useOnboarding } from "@/contexts/OnboardingContext";
 import {
     Smartphone,
@@ -6,7 +6,7 @@ import {
     Lock,
     CheckCircle,
 } from "lucide-react-native";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import {
     Dimensions,
     FlatList,
@@ -27,45 +27,46 @@ interface OnboardingSlide {
     color: string;
 }
 
-const slides: OnboardingSlide[] = [
-    {
-        id: "1",
-        icon: <Smartphone size={80} color={Colors.light.tint} />,
-        title: "Bienvenue sur MTN MoMo Tracker",
-        description:
-            "Suivez et gérez vos transactions Mobile Money facilement. Toutes vos données restent privées et sont stockées localement sur votre appareil.",
-        color: Colors.light.tint,
-    },
-    {
-        id: "2",
-        icon: <TrendingUp size={80} color={Colors.light.income} />,
-        title: "Analysez vos finances",
-        description:
-            "Visualisez vos dépenses et revenus avec des statistiques détaillées. Filtrez par période, montant ou type de transaction pour mieux comprendre vos habitudes financières.",
-        color: Colors.light.income,
-    },
-    {
-        id: "3",
-        icon: <Lock size={80} color={Colors.light.warning} />,
-        title: "Sécurité & Confidentialité",
-        description:
-            "Protégez vos données avec l'authentification biométrique ou code PIN. Masquez les montants pour plus de confidentialité. Vos SMS ne quittent jamais votre appareil.",
-        color: Colors.light.warning,
-    },
-    {
-        id: "4",
-        icon: <CheckCircle size={80} color={Colors.light.success} />,
-        title: "Tout est prêt !",
-        description:
-            "Synchronisez vos SMS MTN MoMo pour commencer. L'application lira uniquement les notifications de MTN Mobile Money, rien d'autre.",
-        color: Colors.light.success,
-    },
-];
-
 export default function OnboardingScreen() {
+    const { colors } = useTheme();
     const { completeOnboarding } = useOnboarding();
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
+
+    const slides: OnboardingSlide[] = useMemo(() => [
+        {
+            id: "1",
+            icon: <Smartphone size={80} color={colors.tint} />,
+            title: "Bienvenue sur MTN MoMo Tracker",
+            description:
+                "Suivez et gérez vos transactions Mobile Money facilement. Toutes vos données restent privées et sont stockées localement sur votre appareil.",
+            color: colors.tint,
+        },
+        {
+            id: "2",
+            icon: <TrendingUp size={80} color={colors.income} />,
+            title: "Analysez vos finances",
+            description:
+                "Visualisez vos dépenses et revenus avec des statistiques détaillées. Filtrez par période, montant ou type de transaction pour mieux comprendre vos habitudes financières.",
+            color: colors.income,
+        },
+        {
+            id: "3",
+            icon: <Lock size={80} color={colors.warning} />,
+            title: "Sécurité & Confidentialité",
+            description:
+                "Protégez vos données avec l'authentification biométrique ou code PIN. Masquez les montants pour plus de confidentialité. Vos SMS ne quittent jamais votre appareil.",
+            color: colors.warning,
+        },
+        {
+            id: "4",
+            icon: <CheckCircle size={80} color={colors.success} />,
+            title: "Tout est prêt !",
+            description:
+                "Synchronisez vos SMS MTN MoMo pour commencer. L'application lira uniquement les notifications de MTN Mobile Money, rien d'autre.",
+            color: colors.success,
+        },
+    ], [colors]);
 
     const handleNext = () => {
         if (currentIndex < slides.length - 1) {
@@ -86,8 +87,8 @@ export default function OnboardingScreen() {
             <View style={[styles.iconContainer, { backgroundColor: `${item.color}15` }]}>
                 {item.icon}
             </View>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
+            <Text style={[styles.title, { color: colors.text }]}>{item.title}</Text>
+            <Text style={[styles.description, { color: colors.textSecondary }]}>{item.description}</Text>
         </View>
     );
 
@@ -96,6 +97,7 @@ export default function OnboardingScreen() {
             key={index}
             style={[
                 styles.dot,
+                { backgroundColor: colors.border },
                 index === currentIndex && styles.activeDot,
                 index === currentIndex && { backgroundColor: slides[currentIndex].color },
             ]}
@@ -103,11 +105,11 @@ export default function OnboardingScreen() {
     );
 
     return (
-        <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top", "bottom"]}>
             <View style={styles.header}>
                 {currentIndex < slides.length - 1 && (
                     <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-                        <Text style={styles.skipText}>Passer</Text>
+                        <Text style={[styles.skipText, { color: colors.textSecondary }]}>Passer</Text>
                     </TouchableOpacity>
                 )}
             </View>
@@ -141,7 +143,7 @@ export default function OnboardingScreen() {
                     ]}
                     onPress={handleNext}
                 >
-                    <Text style={styles.nextButtonText}>
+                    <Text style={[styles.nextButtonText, { color: colors.cardBackground }]}>
                         {currentIndex === slides.length - 1 ? "Commencer" : "Suivant"}
                     </Text>
                 </TouchableOpacity>
@@ -153,7 +155,6 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.light.background,
     },
     header: {
         flexDirection: "row",
@@ -168,7 +169,6 @@ const styles = StyleSheet.create({
     skipText: {
         fontSize: 16,
         fontWeight: "600" as const,
-        color: Colors.light.textSecondary,
     },
     slide: {
         width,
@@ -188,14 +188,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: "700" as const,
-        color: Colors.light.text,
         textAlign: "center",
         marginBottom: 16,
     },
     description: {
         fontSize: 16,
         lineHeight: 26,
-        color: Colors.light.textSecondary,
         textAlign: "center",
     },
     footer: {
@@ -213,7 +211,6 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: Colors.light.border,
     },
     activeDot: {
         width: 24,
@@ -226,6 +223,5 @@ const styles = StyleSheet.create({
     nextButtonText: {
         fontSize: 16,
         fontWeight: "600" as const,
-        color: Colors.light.cardBackground,
     },
 });

@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useSecurity } from "@/contexts/SecurityContext";
 import { Lock } from "lucide-react-native";
 import React, { useEffect } from "react";
@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LockScreen() {
+    const { colors } = useTheme();
     const { authenticate, isAuthenticated } = useSecurity();
     const [isAuthenticating, setIsAuthenticating] = React.useState(false);
 
@@ -29,28 +30,28 @@ export default function LockScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.content}>
-                <View style={styles.iconContainer}>
-                    <Lock size={64} color={Colors.light.tint} />
+                <View style={[styles.iconContainer, { backgroundColor: `${colors.tint}20` }]}>
+                    <Lock size={64} color={colors.tint} />
                 </View>
 
-                <Text style={styles.title}>Application verrouillée</Text>
-                <Text style={styles.subtitle}>
+                <Text style={[styles.title, { color: colors.text }]}>Application verrouillée</Text>
+                <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
                     Authentifiez-vous pour accéder à vos transactions
                 </Text>
 
                 <TouchableOpacity
-                    style={styles.unlockButton}
+                    style={[styles.unlockButton, { backgroundColor: colors.tint }]}
                     onPress={handleAuthenticate}
                     disabled={isAuthenticating}
                 >
                     {isAuthenticating ? (
-                        <ActivityIndicator color={Colors.light.cardBackground} />
+                        <ActivityIndicator color={colors.cardBackground} />
                     ) : (
                         <>
-                            <Lock size={20} color={Colors.light.cardBackground} />
-                            <Text style={styles.unlockButtonText}>Déverrouiller</Text>
+                            <Lock size={20} color={colors.cardBackground} />
+                            <Text style={[styles.unlockButtonText, { color: colors.cardBackground }]}>Déverrouiller</Text>
                         </>
                     )}
                 </TouchableOpacity>
@@ -62,7 +63,6 @@ export default function LockScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.light.background,
     },
     content: {
         flex: 1,
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
         width: 120,
         height: 120,
         borderRadius: 60,
-        backgroundColor: `${Colors.light.tint}20`,
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 32,
@@ -82,13 +81,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: "700" as const,
-        color: Colors.light.text,
         marginBottom: 12,
         textAlign: "center",
     },
     subtitle: {
         fontSize: 16,
-        color: Colors.light.textSecondary,
         textAlign: "center",
         marginBottom: 48,
         lineHeight: 24,
@@ -97,7 +94,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: Colors.light.tint,
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 12,
@@ -107,6 +103,5 @@ const styles = StyleSheet.create({
     unlockButtonText: {
         fontSize: 16,
         fontWeight: "600" as const,
-        color: Colors.light.cardBackground,
     },
 });
