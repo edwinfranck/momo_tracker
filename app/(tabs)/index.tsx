@@ -108,37 +108,37 @@ export default function DashboardScreen() {
           </Text>
           <View style={styles.balanceStats}>
             <View style={styles.balanceStat}>
-              <ArrowUpCircle size={16} color={colors.income} />
+              <ArrowDownCircle size={16} color={colors.expense} />
               <Text style={[styles.balanceStatText, { color: colors.text }]}>
-                {stats.receivedCount} reçus
+                {stats.receivedCount} Djè reçus
               </Text>
             </View>
             <View style={styles.balanceStat}>
-              <ArrowDownCircle size={16} color={colors.expense} />
+              <ArrowUpCircle size={16} color={colors.income} />
               <Text style={[styles.balanceStatText, { color: colors.text }]}>
-                {stats.sentCount} envoyés
+                {stats.sentCount} Djè envoyés
               </Text>
             </View>
           </View>
         </View>
 
         <View style={styles.statsGrid}>
-          <View style={[styles.statCard, styles.incomeCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.income }]}>
+          <View style={[styles.statCard, styles.incomeCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.expense }]}>
             <View style={styles.statIconContainer}>
-              <TrendingUp size={24} color={colors.income} />
+              <TrendingDown size={24} color={colors.expense} />
             </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total reçu</Text>
-            <Text style={[styles.statValue, { color: colors.income }]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Djè reçu</Text>
+            <Text style={[styles.statValue, { color: colors.expense }]}>
               {formatCurrency(stats.totalReceived)}
             </Text>
           </View>
 
-          <View style={[styles.statCard, styles.expenseCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.expense }]}>
+          <View style={[styles.statCard, styles.expenseCard, { backgroundColor: colors.cardBackground, borderLeftColor: colors.income }]}>
             <View style={styles.statIconContainer}>
-              <TrendingDown size={24} color={colors.expense} />
+              <TrendingUp size={24} color={colors.income} />
             </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total envoyé</Text>
-            <Text style={[styles.statValue, { color: colors.expense }]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Djè envoyé</Text>
+            <Text style={[styles.statValue, { color: colors.income }]}>
               {formatCurrency(stats.totalSent)}
             </Text>
           </View>
