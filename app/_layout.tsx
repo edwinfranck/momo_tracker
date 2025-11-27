@@ -32,14 +32,14 @@ function RootLayoutNav() {
     );
   }
 
-  // Show Terms and Conditions if not accepted
-  if (!areTermsAccepted) {
-    return <TermsAndConditions />;
-  }
-
   // Show Onboarding if not completed
   if (!isOnboardingCompleted) {
     return <OnboardingScreen />;
+  }
+
+  // Show Terms and Conditions if not accepted
+  if (!areTermsAccepted) {
+    return <TermsAndConditions />;
   }
 
   // Show lock screen if security is enabled and not authenticated
