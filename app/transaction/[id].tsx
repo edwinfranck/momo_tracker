@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   infoCard: {
-    borderRadius: 1,
+    borderRadius: 8,
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   infoIcon: {
     width: 40,
     height: 40,
-    borderRadius: 1,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     fontWeight: "600" as const,
   },
   rawMessageCard: {
-    borderRadius: 1,
+    borderRadius: 8,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 1,
+    borderRadius: 8,
     marginBottom: 32,
     gap: 8,
   },

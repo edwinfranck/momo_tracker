@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     },
     nextButton: {
         paddingVertical: 16,
-        borderRadius: 12,
+        borderRadius: 8,
         alignItems: "center",
     },
     nextButtonText: {

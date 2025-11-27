@@ -424,7 +424,7 @@ export default function SettingsScreen() {
           <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
             <TouchableOpacity
               style={[styles.settingRow, { borderBottomColor: colors.border }]}
-              onPress={() => router.push("/terms" as any)}
+              onPress={() => router.push("/term" as any)}
             >
               <View style={styles.settingLeft}>
                 <View style={[styles.settingIconContainer, { backgroundColor: `${colors.tint}15` }]}>
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   card: {
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -532,6 +532,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
+
   },
   infoLabel: {
     fontSize: 15,
@@ -554,7 +555,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 8,
     marginTop: 12,
     gap: 8,
   },
@@ -576,7 +577,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    borderRadius: 12,
+    borderRadius: 8,
     marginTop: 12,
     gap: 8,
   },
@@ -613,7 +614,7 @@ const styles = StyleSheet.create({
   settingIconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
   },

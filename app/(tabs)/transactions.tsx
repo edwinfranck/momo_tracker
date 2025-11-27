@@ -176,7 +176,7 @@ export default function TransactionsScreen() {
             style={{
               width: 10,
               height: 10,
-              borderRadius: 1,
+              borderRadius: 8,
               backgroundColor: getTransactionColor(item.type),
             }}
           />
@@ -547,9 +547,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 1,
+    borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    //paddingVertical: 1,
     gap: 8,
   },
   searchInput: {
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
   filterButton: {
     width: 48,
     height: 48,
-    borderRadius: 1,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 1,
+    borderRadius: 8,
     marginRight: 8,
   },
   filterChipActive: {
@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    borderRadius: 1,
+    borderRadius: 8,
     marginBottom: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
   transactionIcon: {
     width: 44,
     height: 44,
-    borderRadius: 1,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -662,13 +662,13 @@ const styles = StyleSheet.create({
   summaryCard: {
     marginHorizontal: 16,
     marginBottom: 12,
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: 1,
+    elevation: 1,
   },
   summaryTitle: {
     fontSize: 16,
@@ -739,7 +739,7 @@ const styles = StyleSheet.create({
   activeFilterDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: 8,
   },
   resetFiltersButton: {
     flexDirection: "row",

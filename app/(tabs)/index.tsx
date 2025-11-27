@@ -204,7 +204,7 @@ export default function DashboardScreen() {
                       style={{
                         width: 8,
                         height: 8,
-                        borderRadius: 1,
+                        borderRadius: 8,
                         backgroundColor: getTransactionColor(transaction.type),
                       }}
                     />
@@ -262,12 +262,12 @@ const styles = StyleSheet.create({
   balanceCard: {
     margin: 16,
     padding: 24,
-    borderRadius: 1,
+    borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   balanceLabel: {
     fontSize: 14,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   statCard: {
     width: (width - 44) / 2,
     padding: 16,
-    borderRadius: 1,
+    borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    borderRadius: 1,
+    borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   transactionIcon: {
     width: 40,
     height: 40,
-    borderRadius: 1,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 4,
     right: 4,
-    borderRadius: 10,
+    borderRadius: 8,
     minWidth: 18,
     height: 18,
     justifyContent: "center",
