@@ -58,16 +58,18 @@ export const [AutoSyncProvider, useAutoSync] = createContextHook(() => {
                 return;
             }
 
-            console.log('📱 Lecture des SMS MTN MoMo...');
+            console.log('📱 Lecture de TOUS les SMS MTN MoMo (sans limite)...');
 
-            // Lire les SMS des 6 derniers mois pour la première synchronisation
-            const messages = await readMTNMoMoSMS(500, 180);
+            // Lire TOUS les SMS MTN MoMo historiques
+            // maxCount: 999999 (pratiquement illimité)
+            // daysBack: 3650 (10 ans)
+            const messages = await readMTNMoMoSMS(999999, 3650);
 
-            console.log(`📊 ${messages.length} SMS MTN MoMo trouvés`);
+            console.log(`📊 ${messages.length} SMS MTN MoMo trouvés au total`);
 
             if (messages.length > 0) {
                 const count = parseSMSMessages(messages);
-                console.log(`✅ Synchronisation initiale terminée: ${count} nouvelles transactions importées`);
+                console.log(`✅ Synchronisation initiale terminée: ${count} nouvelles transactions importées sur ${messages.length} SMS trouvés`);
             } else {
                 console.log('ℹ️ Aucun SMS MTN MoMo trouvé');
             }

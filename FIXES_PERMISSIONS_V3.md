@@ -60,8 +60,8 @@ Maintenant avec toutes les permissions, le listener fonctionne:
 3. Conditions d'Utilisation
    └─ Acceptation des termes
    
-4. Synchronisation Automatique
-   ├─ Si permissions accordées: Sync auto des 6 derniers mois
+4. **Synchronisation Automatique** (si permissions accordées)
+   ├─ Lit **TOUS les SMS MTN MoMo historiques** (jusqu'à 10 ans)
    └─ Si refusées: Possibilité de synchroniser manuellement
    
 5. Tableau de Bord

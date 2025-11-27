@@ -68,11 +68,11 @@
 
 ## Configuration des Limites
 
-| Type de Sync | Nombre de SMS | Jours en Arrière |
-|-------------|---------------|------------------|
-| Initiale (auto) | 500 max | 180 jours (6 mois) |
-| Manuelle (pull-to-refresh) | 200 max | 30 jours (1 mois) |
-| Listener temps réel | Illimité | Temps réel |
+| Type de Sync | Nombre de SMS | Jours en Arrière | Notes |
+|-------------|---------------|------------------|-------|
+| Initiale (auto) | **Illimité** (999999) | **10 ans** (3650 jours) | Lit TOUS les SMS MTN MoMo historiques |
+| Manuelle (pull-to-refresh) | 200 max | 30 jours (1 mois) | Synchronisation rapide des récents |
+| Listener temps réel | Illimité | Temps réel | Détection automatique |
 
 ## Gestion des Erreurs
 
