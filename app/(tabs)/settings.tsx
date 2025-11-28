@@ -182,7 +182,11 @@ export default function SettingsScreen() {
           headerShadowVisible: false,
         }}
       />
-      <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
 
         {/* Apparence Section */}
         <View style={styles.section}>
@@ -212,7 +216,7 @@ export default function SettingsScreen() {
                   : "Jamais"}
               </Text>
             </View>
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, styles.infoRowLast]}>
               <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Transactions stockées</Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>{transactions.length}</Text>
             </View>
@@ -399,7 +403,7 @@ export default function SettingsScreen() {
                 {stats.totalFees.toLocaleString("fr-FR")} FCFA
               </Text>
             </View>
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, styles.infoRowLast]}>
               <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Solde actuel</Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
                 {stats.currentBalance.toLocaleString("fr-FR")} FCFA
@@ -426,7 +430,7 @@ export default function SettingsScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>À propos</Text>
           <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
             <TouchableOpacity
-              style={[styles.settingRow, { borderBottomColor: colors.border }]}
+              style={[styles.settingRow, styles.settingRowLast]}
               onPress={() => router.push("/terms" as any)}
             >
               <View style={styles.settingLeft}>
@@ -438,45 +442,13 @@ export default function SettingsScreen() {
               <ChevronRight size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.settingRow, styles.settingRowLast]}
-              onPress={() => {
-                // Reset onboarding to show it again (for demo/review purposes)
-                // In a real app, we might want a dedicated "Help" screen instead of resetting
-                Alert.alert(
-                  "Revoir l'introduction",
-                  "Voulez-vous revoir l'écran d'accueil ?",
-                  [
-                    { text: "Non", style: "cancel" },
-                    {
-                      text: "Oui",
-                      onPress: async () => {
-                        const { resetOnboarding } = require("@/contexts/OnboardingContext").useOnboarding();
-                        // We only reset onboarding flag, not terms
-                        // But since our context resets both in resetOnboarding, we might need a specific method
-                        // For now let's just use the reset which is fine for "revoir"
-                        // Actually, let's just navigate to a modal if we had one, but since logic is in layout...
-                        // Let's just use a trick: we can't easily "navigate" to onboarding because it's conditional in layout.
-                        // So we will add a specific route for it later if needed.
-                        // For now, let's just link to Terms.
-                      }
-                    }
-                  ]
-                );
-              }}
-            >
-              {/* We will skip the onboarding replay button for now as it requires routing changes or context tweaks 
-                   to show without resetting state. Let's just keep Terms and Version info.
-               */}
-            </TouchableOpacity>
-
             <View style={styles.aboutContent}>
               <Text style={[styles.aboutText, { color: colors.textSecondary }]}>
-                MTN MoMo Tracker vous aide à suivre et analyser vos transactions
-                Mobile Money en lisant vos SMS de notification.
+                DJAI t'aide à voir claire dant ton DJAI
+                Mobile Money en lisant tes SMS de notification.
               </Text>
               <Text style={[styles.aboutText, styles.versionText, { color: colors.textSecondary }]}>
-                Version 1.0.0
+                Dev by Edwin
               </Text>
             </View>
           </View>
@@ -492,6 +464,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 40,
   },
   section: {
     marginTop: 24,
@@ -535,7 +510,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-
+  },
+  infoRowLast: {
+    borderBottomWidth: 0,
   },
   infoLabel: {
     fontSize: 15,

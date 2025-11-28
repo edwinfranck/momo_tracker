@@ -36,7 +36,7 @@ export default function LockScreen() {
                     <Lock size={64} color={colors.tint} />
                 </View>
 
-                <Text style={[styles.title, { color: colors.text }]}>Application verrouillée</Text>
+                <Text style={[styles.title, { color: colors.text }]}>Ton DJAI est verrouillé</Text>
                 <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
                     Authentifiez-vous pour accéder à vos transactions
                 </Text>

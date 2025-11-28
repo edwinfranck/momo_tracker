@@ -85,8 +85,8 @@ export default function NotificationsScreen() {
                     <Bell size={64} color={colors.border} />
                     <Text style={[styles.emptyTitle, { color: colors.text }]}>Aucune notification</Text>
                     <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                        Vous recevrez une notification ici à chaque nouvelle transaction
-                        détectée.
+                        Tu reçois une notif ici à chaque nouvelle transaction maintenant si çà marche pas
+                        faut te patiencer un jour çà va fonctionner on sait jamais.
                     </Text>
                 </View>
             ) : (
