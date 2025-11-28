@@ -34,8 +34,8 @@ function extractAmount(text: string): number {
 }
 
 function extractFee(text: string): number {
-  // Format: Frais: 100F ou Frais: 100 FCFA
-  const feeMatch = text.match(/Frais:\s*(\d+(?:,\d+)?(?:\.\d+)?)\s*(?:F|FCFA)/i);
+  // Format: Frais: 100F ou Frais: 100 FCFA ou Frais 100 FCFA (sans deux-points)
+  const feeMatch = text.match(/Frais:?\s*(\d+(?:,\d+)?(?:\.\d+)?)\s*(?:F|FCFA)/i);
   if (feeMatch) {
     return parseFloat(feeMatch[1].replace(',', ''));
   }
@@ -51,6 +51,12 @@ function extractBalance(text: string): number {
 
   // Format: Nouveau solde: 1382 FCFA
   balanceMatch = text.match(/Nouveau solde:\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
+  if (balanceMatch) {
+    return parseFloat(balanceMatch[1].replace(',', ''));
+  }
+
+  // Format: Solde courant: 19618 FCFA
+  balanceMatch = text.match(/Solde courant:\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
   if (balanceMatch) {
     return parseFloat(balanceMatch[1].replace(',', ''));
   }
@@ -115,6 +121,13 @@ function extractCounterparty(text: string, type: TransactionType): string {
   const transferPourMatch = text.match(/transfert effectue pour\s+\d+(?:[.,]\d+)?\s*(?:F|FCFA|XOF)?\s+a\s+([^(]+?)\s*\(/i);
   if (transferPourMatch) {
     return transferPourMatch[1].trim();
+  }
+
+  // Pattern spécifique pour "Paiement effectue pour ... a NOM le"
+  // Capture NOM sans le "a" ni le "le"
+  const paiementPourMatch = text.match(/paiement effectue pour\s+\d+(?:[.,]\d+)?\s*(?:F|FCFA|XOF)?\s+a\s+([^\s]+(?:\s+[^\s]+)*)\s+le\s+/i);
+  if (paiementPourMatch) {
+    return paiementPourMatch[1].trim();
   }
 
   const patterns = [
