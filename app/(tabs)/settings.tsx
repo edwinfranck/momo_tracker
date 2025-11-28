@@ -382,35 +382,7 @@ export default function SettingsScreen() {
           )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Statistiques</Text>
-          <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
-            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Total envoyé</Text>
-              <Text style={[styles.infoValue, { color: colors.expense }]}>
-                {stats.totalSent.toLocaleString("fr-FR")} FCFA
-              </Text>
-            </View>
-            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Total reçu</Text>
-              <Text style={[styles.infoValue, { color: colors.income }]}>
-                {stats.totalReceived.toLocaleString("fr-FR")} FCFA
-              </Text>
-            </View>
-            <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Total frais</Text>
-              <Text style={[styles.infoValue, { color: colors.warning }]}>
-                {stats.totalFees.toLocaleString("fr-FR")} FCFA
-              </Text>
-            </View>
-            <View style={[styles.infoRow, styles.infoRowLast]}>
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Solde actuel</Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {stats.currentBalance.toLocaleString("fr-FR")} FCFA
-              </Text>
-            </View>
-          </View>
-        </View>
+
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Données</Text>

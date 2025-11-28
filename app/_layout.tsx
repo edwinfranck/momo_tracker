@@ -11,8 +11,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+// import * as ScreenCapture from "expo-screen-capture"; // À décommenter après installation
 import React, { useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();

@@ -17,7 +17,7 @@ import {
   ArrowUpDown,
   X
 } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -26,6 +26,7 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -51,6 +52,8 @@ export default function TransactionsScreen() {
   const router = useRouter();
   const [showFilters, setShowFilters] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
 
   // Local state for amount filter inputs
   const [minAmountInput, setMinAmountInput] = useState("");
@@ -366,73 +369,20 @@ export default function TransactionsScreen() {
           {filteredTransactions.length !== 1 ? "s" : ""}
         </Text>
 
-        {filteredTransactions.length > 0 && (
-          <View style={[styles.summaryCard, { backgroundColor: colors.cardBackground }]}>
-            <Text style={[styles.summaryTitle, { color: colors.text }]}>Résumé</Text>
-            <View style={styles.summaryContent}>
-              {(filterType === "all" ||
-                filterType === "transfer_received" ||
-                filterType === "deposit" ||
-                filterType === "uemoa_received") && (
-                  <View style={styles.summaryRow}>
-                    <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Total reçu</Text>
-                    <Text style={[styles.summaryValue, { color: colors.income }]}>
-                      +{formatCurrency(totals.totalReceived)}
-                    </Text>
-                  </View>
-                )}
-              {(filterType === "all" ||
-                filterType === "transfer_sent" ||
-                filterType === "withdrawal" ||
-                filterType === "payment" ||
-                filterType === "uemoa_sent") && (
-                  <View style={styles.summaryRow}>
-                    <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Total envoyé</Text>
-                    <Text style={[styles.summaryValue, { color: colors.expense }]}>
-                      -{formatCurrency(totals.totalSent)}
-                    </Text>
-                  </View>
-                )}
-              {totals.totalFees > 0 && (
-                <View style={styles.summaryRow}>
-                  <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Frais totaux</Text>
-                  <Text style={[styles.summaryValue, { color: colors.warning }]}>
-                    {formatCurrency(totals.totalFees)}
-                  </Text>
-                </View>
-              )}
-              {filterType === "all" && (
-                <View style={[styles.summaryRow, styles.netBalanceRow, { borderTopColor: `${colors.textSecondary}20` }]}>
-                  <Text style={[styles.summaryLabel, styles.netBalanceLabel, { color: colors.text }]}>
-                    Solde net
-                  </Text>
-                  <Text
-                    style={[
-                      styles.summaryValue,
-                      styles.netBalanceValue,
-                      {
-                        color:
-                          totals.netBalance >= 0
-                            ? colors.income
-                            : colors.expense,
-                      },
-                    ]}
-                  >
-                    {totals.netBalance >= 0 ? "+" : ""}
-                    {formatCurrency(Math.abs(totals.netBalance))}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-        )}
+
 
         <FlatList
+          ref={flatListRef}
           data={filteredTransactions}
           renderItem={renderTransaction}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
+          onScroll={(event) => {
+            const offsetY = event.nativeEvent.contentOffset.y;
+            setShowScrollToTop(offsetY > 500);
+          }}
+          scrollEventThrottle={16}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Text style={[styles.emptyStateText, { color: colors.text }]}>
@@ -446,6 +396,18 @@ export default function TransactionsScreen() {
             </View>
           }
         />
+
+        {/* Scroll to Top Button */}
+        {showScrollToTop && (
+          <TouchableOpacity
+            style={[styles.scrollToTopButton, { backgroundColor: colors.tint }]}
+            onPress={() => {
+              flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+            }}
+          >
+            <ArrowUpDown size={24} color={colors.cardBackground} style={{ transform: [{ rotate: '180deg' }] }} />
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -581,57 +543,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
   },
-  summaryCard: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 8,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  summaryTitle: {
-    fontSize: 16,
-    fontWeight: "600" as const,
-    marginBottom: 12,
-  },
-  summaryContent: {
-    gap: 8,
-  },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  scrollToTopButton: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 6,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    fontWeight: "500" as const,
-  },
-  summaryValue: {
-    fontSize: 15,
-    fontWeight: "600" as const,
-  },
-  incomeText: {
-    // color set dynamically
-  },
-  expenseText: {
-    // color set dynamically
-  },
-  netBalanceRow: {
-    borderTopWidth: 1,
-    marginTop: 8,
-    paddingTop: 12,
-  },
-  netBalanceLabel: {
-    fontSize: 15,
-    fontWeight: "600" as const,
-  },
-  netBalanceValue: {
-    fontSize: 18,
-    fontWeight: "700" as const,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   // Advanced Filters Styles
   advancedFiltersButtonContainer: {

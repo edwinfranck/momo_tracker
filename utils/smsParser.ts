@@ -34,7 +34,8 @@ function extractAmount(text: string): number {
 }
 
 function extractFee(text: string): number {
-  const feeMatch = text.match(/Frais:\s*(\d+(?:,\d+)?(?:\.\d+)?)F/i);
+  // Format: Frais: 100F ou Frais: 100 FCFA
+  const feeMatch = text.match(/Frais:\s*(\d+(?:,\d+)?(?:\.\d+)?)\s*(?:F|FCFA)/i);
   if (feeMatch) {
     return parseFloat(feeMatch[1].replace(',', ''));
   }
@@ -107,6 +108,13 @@ function extractCounterparty(text: string, type: TransactionType): string {
   const transferMatch = text.match(/transfert de\s+\d+(?:[.,]\d+)?\s*(?:F|FCFA|XOF)?\s+de\s+([^(.]+)/i);
   if (transferMatch) {
     return transferMatch[1].trim();
+  }
+
+  // Pattern spécifique pour "Transfert effectue pour ... a NOM (PHONE)"
+  // On veut extraire NOM sans le "a"
+  const transferPourMatch = text.match(/transfert effectue pour\s+\d+(?:[.,]\d+)?\s*(?:F|FCFA|XOF)?\s+a\s+([^(]+?)\s*\(/i);
+  if (transferPourMatch) {
+    return transferPourMatch[1].trim();
   }
 
   const patterns = [
