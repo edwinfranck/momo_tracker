@@ -3,6 +3,7 @@ import { requestAllPermissions, hasAllPermissions } from "@/utils/permissionsSer
 import { Shield, MessageSquare, Bell, CheckCircle } from "lucide-react-native";
 import React, { useState } from "react";
 import {
+    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -45,7 +46,11 @@ export default function PermissionsScreen({ onComplete }: PermissionsScreenProps
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top", "bottom"]}>
-            <View style={styles.content}>
+            <ScrollView
+                style={styles.content}
+                contentContainerStyle={styles.contentContainer}
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={[styles.iconContainer, { backgroundColor: `${colors.tint}15` }]}>
                     <Shield size={80} color={colors.tint} />
                 </View>
@@ -109,7 +114,7 @@ export default function PermissionsScreen({ onComplete }: PermissionsScreenProps
                         Toutes tes données restent sur ton téléphone. Rien n'est envoyé sur Internet.
                     </Text>
                 </View>
-            </View>
+            </ScrollView>
 
             <View style={styles.footer}>
                 <TouchableOpacity
@@ -146,8 +151,11 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
+    },
+    contentContainer: {
         paddingHorizontal: 24,
         paddingTop: 40,
+        paddingBottom: 24,
     },
     iconContainer: {
         width: 140,
@@ -204,6 +212,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderLeftWidth: 4,
         alignItems: "center",
+        marginBottom: 24,
     },
     noteText: {
         flex: 1,
