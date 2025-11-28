@@ -243,9 +243,6 @@ export default function DashboardScreen() {
         </View>
 
         {/* Graphique des dépenses */}
-        {transactions.length > 0 && (
-          <SpendingChart transactions={transactions} />
-        )}
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
