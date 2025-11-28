@@ -163,7 +163,7 @@ export default function DashboardScreen() {
           />
         }
       >
-        <View style={[styles.balanceCard, { backgroundColor: colors.background }]}>
+        <View style={[styles.balanceCard, { backgroundColor: colors.cardBackground }]}>
           <View style={styles.balanceHeader}>
             <Text style={[styles.balanceLabel, { color: colors.text }]}>Solde actuel</Text>
             <TouchableOpacity
@@ -185,13 +185,13 @@ export default function DashboardScreen() {
             <View style={styles.balanceStat}>
               <ArrowDownCircle size={16} color={colors.expense} />
               <Text style={[styles.balanceStatText, { color: colors.text }]}>
-                {stats.receivedCount} Djè reçus
+                {stats.receivedCount} Djai reçus
               </Text>
             </View>
             <View style={styles.balanceStat}>
               <ArrowUpCircle size={16} color={colors.income} />
               <Text style={[styles.balanceStatText, { color: colors.text }]}>
-                {stats.sentCount} Djè envoyés
+                {stats.sentCount} Djai envoyés
               </Text>
             </View>
           </View>
