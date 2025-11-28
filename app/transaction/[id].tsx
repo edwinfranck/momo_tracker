@@ -1,5 +1,6 @@
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTransactions } from "@/contexts/TransactionsContext";
+import { useSecurity } from "@/contexts/SecurityContext";
 import { TransactionTypeLabels } from "@/types/transaction";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {

@@ -47,7 +47,7 @@ export default function TransactionsScreen() {
     sortBy,
     setSortBy,
   } = useTransactions();
-  const { formatAmount } = useSecurity();
+  const { formatAmount, hideAmounts } = useSecurity();
   const router = useRouter();
   const [showFilters, setShowFilters] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -186,7 +186,7 @@ export default function TransactionsScreen() {
             {TransactionTypeLabels[item.type]}
           </Text>
           <Text style={[styles.transactionCounterparty, { color: colors.textSecondary }]}>
-            {item.counterparty}
+            {hideAmounts ? "••••••" : item.counterparty}
           </Text>
           <Text style={[styles.transactionDate, { color: colors.textSecondary }]}>{formatDate(item.date)}</Text>
         </View>

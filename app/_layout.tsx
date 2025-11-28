@@ -7,7 +7,6 @@ import { SecurityProvider, useSecurity } from "@/contexts/SecurityContext";
 import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
-import { AutoSyncProvider } from "@/contexts/AutoSyncContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -111,11 +110,9 @@ export default function RootLayout() {
           <ThemeProvider>
             <NotificationsProvider>
               <TransactionsProvider>
-                <AutoSyncProvider>
-                  <GestureHandlerRootView>
-                    <RootLayoutNav />
-                  </GestureHandlerRootView>
-                </AutoSyncProvider>
+                <GestureHandlerRootView>
+                  <RootLayoutNav />
+                </GestureHandlerRootView>
               </TransactionsProvider>
             </NotificationsProvider>
           </ThemeProvider>

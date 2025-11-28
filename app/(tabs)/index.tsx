@@ -80,8 +80,10 @@ export default function DashboardScreen() {
         }
       }
 
-      // Lire les SMS des 30 derniers jours
-      const messages = await readMTNMoMoSMS(200, 30);
+      // Lire TOUS les SMS MTN MoMo (sans limite de temps)
+      // maxCount: 999999 (pratiquement illimité)
+      // daysBack: 3650 (10 ans)
+      const messages = await readMTNMoMoSMS(999999, 3650);
 
       if (messages.length > 0) {
         const count = parseSMSMessages(messages);
@@ -89,20 +91,20 @@ export default function DashboardScreen() {
         if (count > 0) {
           Alert.alert(
             'Synchronisation réussie',
-            `${count} nouvelle${count !== 1 ? 's' : ''} transaction${count !== 1 ? 's' : ''} importée${count !== 1 ? 's' : ''}.`,
+            `${messages.length} SMS lu${messages.length !== 1 ? 's' : ''}\n${count} nouvelle${count !== 1 ? 's' : ''} transaction${count !== 1 ? 's' : ''} importée${count !== 1 ? 's' : ''}.`,
             [{ text: 'OK' }]
           );
         } else {
           Alert.alert(
             'Synchronisation terminée',
-            'Aucune nouvelle transaction trouvée.',
+            `${messages.length} SMS MTN MoMo trouvé${messages.length !== 1 ? 's' : ''}.\nAucune nouvelle transaction à importer.`,
             [{ text: 'OK' }]
           );
         }
       } else {
         Alert.alert(
           'Aucun SMS trouvé',
-          'Aucun SMS MTN MoMo trouvé dans les 30 derniers jours.',
+          'Aucun SMS MTN MoMo trouvé sur votre appareil.',
           [{ text: 'OK' }]
         );
       }
@@ -256,6 +258,12 @@ export default function DashboardScreen() {
               <Text style={[styles.emptyStateSubtext, { color: colors.textSecondary }]}>
                 Synchronisez vos SMS MTN MoMo pour commencer
               </Text>
+              <TouchableOpacity
+                style={[styles.syncButton, { backgroundColor: colors.tint }]}
+                onPress={onRefresh}
+              >
+                <Text style={styles.syncButtonText}>Synchroniser mes SMS</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.transactionsList}>
@@ -289,7 +297,7 @@ export default function DashboardScreen() {
                       {TransactionTypeLabels[transaction.type]}
                     </Text>
                     <Text style={[styles.transactionCounterparty, { color: colors.textSecondary }]}>
-                      {transaction.counterparty}
+                      {hideAmounts ? "••••••" : transaction.counterparty}
                     </Text>
                     <Text style={[styles.transactionDate, { color: colors.textSecondary }]}>
                       {formatDate(transaction.date)}
@@ -452,6 +460,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     marginTop: 8,
+  },
+  syncButton: {
+    marginTop: 24,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  syncButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600" as const,
+    textAlign: "center",
   },
   transactionsList: {
     gap: 12,
