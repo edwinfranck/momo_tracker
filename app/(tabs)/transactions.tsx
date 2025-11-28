@@ -353,88 +353,10 @@ export default function TransactionsScreen() {
               </View>
 
               {/* Amount Range Filter */}
-              <View style={[styles.filterSection, { borderBottomColor: colors.border }]}>
-                <View style={styles.filterSectionHeader}>
-                  <DollarSign size={18} color={colors.tint} />
-                  <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Montant</Text>
-                </View>
-                <View style={styles.amountFilterContainer}>
-                  <View style={styles.amountInputWrapper}>
-                    <Text style={[styles.amountInputLabel, { color: colors.textSecondary }]}>Min (FCFA)</Text>
-                    <TextInput
-                      style={[styles.amountInput, { backgroundColor: colors.cardBackground, color: colors.text, borderColor: colors.border }]}
-                      placeholder="0"
-                      placeholderTextColor={colors.textSecondary}
-                      keyboardType="numeric"
-                      value={minAmountInput}
-                      onChangeText={setMinAmountInput}
-                      onBlur={applyAmountFilter}
-                    />
-                  </View>
-                  <Text style={[styles.amountSeparator, { color: colors.textSecondary }]}>—</Text>
-                  <View style={styles.amountInputWrapper}>
-                    <Text style={[styles.amountInputLabel, { color: colors.textSecondary }]}>Max (FCFA)</Text>
-                    <TextInput
-                      style={[styles.amountInput, { backgroundColor: colors.cardBackground, color: colors.text, borderColor: colors.border }]}
-                      placeholder="∞"
-                      placeholderTextColor={colors.textSecondary}
-                      keyboardType="numeric"
-                      value={maxAmountInput}
-                      onChangeText={setMaxAmountInput}
-                      onBlur={applyAmountFilter}
-                    />
-                  </View>
-                </View>
-                {(minAmount !== null || maxAmount !== null) && (
-                  <Text style={[styles.filterActiveText, { color: colors.tint }]}>
-                    Filtre actif: {minAmount ?? 0} - {maxAmount ?? "∞"} FCFA
-                  </Text>
-                )}
-              </View>
+
 
               {/* Sort Options */}
-              <View style={[styles.filterSection, { borderBottomColor: colors.border }]}>
-                <View style={styles.filterSectionHeader}>
-                  <ArrowUpDown size={18} color={colors.tint} />
-                  <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Trier par</Text>
-                </View>
-                <View style={styles.sortOptionsContainer}>
-                  {sortOptions.map((option) => (
-                    <TouchableOpacity
-                      key={option.value}
-                      style={[
-                        styles.sortOption,
-                        { backgroundColor: colors.cardBackground, borderColor: colors.border },
-                        sortBy === option.value && { borderColor: colors.tint, backgroundColor: `${colors.tint}10` },
-                      ]}
-                      onPress={() => setSortBy(option.value)}
-                    >
-                      <View
-                        style={[
-                          styles.sortOptionRadio,
-                          { borderColor: colors.textSecondary },
-                          sortBy === option.value &&
-                          { borderColor: colors.tint },
-                        ]}
-                      >
-                        {sortBy === option.value && (
-                          <View style={[styles.sortOptionRadioDot, { backgroundColor: colors.tint }]} />
-                        )}
-                      </View>
-                      <Text
-                        style={[
-                          styles.sortOptionText,
-                          { color: colors.text },
-                          sortBy === option.value &&
-                          { color: colors.tint, fontWeight: "600" },
-                        ]}
-                      >
-                        {option.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
+
             </ScrollView>
           </View>
         )}

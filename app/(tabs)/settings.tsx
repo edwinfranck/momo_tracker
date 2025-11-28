@@ -233,6 +233,8 @@ export default function SettingsScreen() {
             </Text>
           </TouchableOpacity>
 
+          {/* Apparence Section */}
+
           {Platform.OS !== "android" && (
             <View style={[styles.warningCard, { backgroundColor: `${colors.warning}20` }]}>
               <AlertCircle size={20} color={colors.warning} />
@@ -243,7 +245,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
           )}
-
+          {/*
           {Platform.OS === "android" && (
             <View style={[styles.infoCard, { backgroundColor: `${colors.success}15` }]}>
               <Shield size={16} color={colors.success} />
@@ -254,7 +256,7 @@ export default function SettingsScreen() {
             </View>
           )}
 
-          {/* Test Notification Button */}
+           Test Notification Button 
           {Platform.OS === "android" && (
             <View style={{ gap: 12 }}>
               <TouchableOpacity
@@ -303,6 +305,7 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             </View>
           )}
+          */}
         </View>
 
         {/* Security & Privacy Section */}
