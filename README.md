@@ -1,68 +1,125 @@
-# Welcome to your Expo app 👋
+# 📱 MoMo Tracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**MoMo Tracker** est une application mobile intelligente et sécurisée conçue pour vous aider à suivre et gérer vos transactions **MTN Mobile Money (MoMo)** automatiquement en analysant vos SMS.
 
-## Get started
+Plus besoin de noter vos dépenses manuellement ou de calculer vos frais : MoMo Tracker le fait pour vous, tout en garantissant une confidentialité totale puisque vos données restent sur votre téléphone.
 
-1. Install dependencies
+---
 
+## ✨ Fonctionnalités Principales
+
+### 📊 Tableau de Bord Financier
+- **Vue d'ensemble instantanée** : Visualisez vos entrées, sorties, frais et solde net en un coup d'œil.
+- **Badges récapitulatifs** : Un résumé compact et horizontal pour ne pas encombrer l'écran.
+- **Graphiques et tendances** (à venir).
+
+### 📩 Synchronisation Automatique
+- **Analyse des SMS** : Importe et catégorise automatiquement vos SMS MTN MoMo.
+- **Support complet** : Gère les transferts (envoyés/reçus), paiements, retraits, dépôts, et transactions UEMOA/ONAFRIQ.
+- **Détection intelligente** : Extrait précisément les montants, frais, destinataires et soldes.
+
+### 🔍 Gestion des Transactions
+- **Historique détaillé** : Liste complète de toutes vos opérations.
+- **Filtres avancés** : Filtrez par période (aujourd'hui, 7 jours, mois...), type de transaction, ou montant.
+- **Recherche** : Retrouvez facilement une transaction par nom, numéro ou ID.
+
+### 🔒 Sécurité & Confidentialité
+- **Mode Privé (👁️)** : Masquez d'un clic tous les montants et informations sensibles (noms, numéros) pour utiliser l'app en public.
+- **Verrouillage Biométrique** : Sécurisez l'accès à l'application via FaceID, TouchID ou code PIN.
+- **Protection Screenshots** : Empêche les captures d'écran sur Android pour éviter les fuites de données.
+- **Offline First** : Vos données sont stockées localement sur votre appareil. Aucune donnée n'est envoyée sur un serveur externe.
+
+### 🎨 Expérience Utilisateur
+- **Thème Sombre/Clair** : S'adapte aux préférences de votre système.
+- **Interface Moderne** : Design épuré, animations fluides et navigation intuitive.
+
+---
+
+## 🛠️ Stack Technique
+
+Ce projet est construit avec les technologies modernes de l'écosystème React Native :
+
+- **Framework** : [React Native](https://reactnative.dev/) avec [Expo](https://expo.dev/) (SDK 54)
+- **Langage** : [TypeScript](https://www.typescriptlang.org/)
+- **Navigation** : [Expo Router](https://docs.expo.dev/router/introduction/)
+- **Gestion d'état** : [Zustand](https://github.com/pmndrs/zustand) & [TanStack Query](https://tanstack.com/query/latest)
+- **Stockage** : AsyncStorage
+- **UI/UX** : Lucide React Native (icônes), Expo Linear Gradient
+- **Fonctionnalités natives** :
+  - `react-native-get-sms-android` (Lecture SMS)
+  - `expo-local-authentication` (Biométrie)
+  - `expo-screen-capture` (Protection écran)
+
+---
+
+## 🚀 Installation et Démarrage
+
+### Prérequis
+- Node.js installé.
+- Un appareil Android (pour tester la lecture des SMS) ou un émulateur.
+
+### Étapes
+
+1. **Cloner le projet**
+   ```bash
+   git clone https://github.com/votre-username/momo-tracker.git
+   cd momo-tracker
+   ```
+
+2. **Installer les dépendances**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Lancer l'application**
    ```bash
-   npx expo start
+   npm run android
    ```
+   *Note : Pour tester la lecture des SMS, vous devez utiliser un appareil Android physique ou un émulateur avec des SMS simulés.*
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📱 Structure du Projet
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+momo_tracker/
+├── app/                 # Pages et routing (Expo Router)
+│   ├── (tabs)/          # Écrans principaux (Dashboard, Transactions, Settings)
+│   ├── transaction/     # Page de détail d'une transaction
+│   └── _layout.tsx      # Layout principal et providers
+├── components/          # Composants réutilisables (Cards, Badges, etc.)
+├── contexts/            # Contextes React (Transactions, Security, Theme...)
+├── utils/               # Utilitaires (smsParser.ts, formatters...)
+├── assets/              # Images et polices
+└── constants/           # Couleurs et configurations
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🛡️ Permissions
 
-To learn more about developing your project with Expo, look at the following resources:
+L'application nécessite les permissions suivantes pour fonctionner correctement :
+- **READ_SMS** : Pour lire et importer vos transactions MoMo.
+- **USE_BIOMETRIC** : Pour sécuriser l'accès à l'application.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 🤝 Contribuer
 
-Join our community of developers creating universal apps.
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request pour suggérer des améliorations.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Forker le projet
+2. Créer une branche (`git checkout -b feature/AmazingFeature`)
+3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
 
+---
 
-Android Bundled 63ms node_modules/expo-router/entry.js (1 module)
- ERROR  expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/. 
+## 📄 Licence
 
-Code: notificationService.ts
-> 1 | import * as Notifications from 'expo-notifications';
-    | ^
-  2 | import { Platform } from 'react-native';
-  3 | import { Transaction } from '@/types/transaction';
-  4 |
-Call Stack
-  <global> (utils/notificationService.ts:1)
-  <global> (contexts/TransactionsContext.tsx:5)
-  <global> (app/(tabs)/index.tsx:3)
- WARN  `expo-notifications` functionality is not fully supported in Expo Go:
-We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.
+Distribué sous la licence MIT. Voir `LICENSE` pour plus d'informations.
 
+---
+
+*Développé avec ❤️ pour simplifier la gestion de vos finances MoMo.*
