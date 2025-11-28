@@ -11,7 +11,7 @@ Plus besoin de noter vos dépenses manuellement ou de calculer vos frais : MoMo 
 ### 📊 Tableau de Bord Financier
 - **Vue d'ensemble instantanée** : Visualisez vos entrées, sorties, frais et solde net en un coup d'œil.
 - **Badges récapitulatifs** : Un résumé compact et horizontal pour ne pas encombrer l'écran.
-- **Graphiques et tendances** (à venir).
+- **Graphiques d'évolution** : Suivez vos dépenses sur 7 jours ou 6 mois avec des graphiques en bâtons interactifs.
 
 ### 📩 Synchronisation Automatique
 - **Analyse des SMS** : Importe et catégorise automatiquement vos SMS MTN MoMo.
@@ -21,6 +21,7 @@ Plus besoin de noter vos dépenses manuellement ou de calculer vos frais : MoMo 
 ### 🔍 Gestion des Transactions
 - **Historique détaillé** : Liste complète de toutes vos opérations.
 - **Filtres avancés** : Filtrez par période (aujourd'hui, 7 jours, mois...), type de transaction, ou montant.
+- **Export PDF** : Générez des relevés professionnels filtrés par période et type de transaction.
 - **Recherche** : Retrouvez facilement une transaction par nom, numéro ou ID.
 
 ### 🔒 Sécurité & Confidentialité

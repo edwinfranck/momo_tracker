@@ -30,6 +30,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { readMTNMoMoSMS } from "@/utils/smsReader";
 import { hasAllPermissions, requestAllPermissions } from "@/utils/permissionsService";
+import SpendingChart from "@/components/SpendingChart";
 
 const { width } = Dimensions.get("window");
 
@@ -240,6 +241,11 @@ export default function DashboardScreen() {
             </Text>
           </View>
         </View>
+
+        {/* Graphique des dépenses */}
+        {transactions.length > 0 && (
+          <SpendingChart transactions={transactions} />
+        )}
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
