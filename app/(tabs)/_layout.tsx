@@ -7,7 +7,7 @@ import {
   Bell
 } from "lucide-react-native";
 import React from "react";
-import { Pressable, View, StyleSheet, Platform } from "react-native";
+import { Pressable, View, StyleSheet, Platform, useColorScheme } from "react-native";
 import Animated, {
   FadeIn,
   FadeOut,
@@ -34,6 +34,8 @@ const labels: Record<string, string> = {
 
 export default function TabLayout() {
   const { colors } = useTheme();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
     <Tabs
@@ -66,7 +68,12 @@ export default function TabLayout() {
               const label = labels[route.name] || route.name;
 
               // Couleur de l'icône et du texte
-              const activeColor = colors.tint === "#FFCC00" ? "#B45309" : colors.tint; // Un peu plus foncé pour le contraste sur fond jaune clair
+              // En mode sombre, le jaune (#FFCC00) passe bien sur fond noir
+              // En mode clair, on fonce le jaune pour le contraste
+              const activeColor = isDark
+                ? colors.tint
+                : (colors.tint === "#FFCC00" ? "#B45309" : colors.tint);
+
               const inactiveColor = colors.textSecondary;
 
               return (
