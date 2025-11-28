@@ -205,11 +205,7 @@ export default function TransactionsScreen() {
             {isIncome ? "+" : "-"}
             {formatCurrency(item.amount)}
           </Text>
-          {item.fee > 0 && (
-            <Text style={[styles.transactionFee, { color: colors.textSecondary }]}>
-              Frais: {formatCurrency(item.fee)}
-            </Text>
-          )}
+
         </View>
       </TouchableOpacity>
     );
