@@ -2,6 +2,7 @@ import { Transaction, TransactionStats, TransactionType } from "@/types/transact
 import { SMSMessage } from "@/utils/smsReader";
 import { parseMTNMoMoSMS } from "@/utils/smsParser";
 import { startSMSListener, stopSMSListener } from "@/utils/smsListener";
+import { showTransactionNotification, initializeNotifications } from "@/utils/notificationService";
 import { useNotifications } from "@/contexts/NotificationsContext";
 import createContextHook from "@nkzw/create-context-hook";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -66,6 +67,15 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
     }
   }, [transactionsQuery.data]);
 
+  // Initialiser le service de notifications au montage
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      initializeNotifications().then(() => {
+        console.log('🔔 Service de notifications initialisé');
+      });
+    }
+  }, []);
+
   // Démarrer le listener SMS automatiquement au montage du composant
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -87,6 +97,11 @@ export const [TransactionsProvider, useTransactions] = createContextHook(() => {
           if (!exists) {
             // Ajouter la transaction
             addTransaction(result.transaction);
+
+            // Afficher la notification système Android
+            showTransactionNotification(result.transaction).catch(err => {
+              console.error('❌ Erreur notification système:', err);
+            });
 
             // Ajouter la notification in-app
             let title = "Nouvelle transaction";
