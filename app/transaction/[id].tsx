@@ -29,6 +29,7 @@ export default function TransactionDetailScreen() {
   const { colors } = useTheme();
   const { id } = useLocalSearchParams();
   const { transactions, deleteTransaction } = useTransactions();
+  const { formatAmount, hideAmounts } = useSecurity();
   const router = useRouter();
 
   const transaction = transactions.find((t) => t.id === id);
@@ -45,7 +46,11 @@ export default function TransactionDetailScreen() {
   }
 
   const formatCurrency = (amount: number) => {
-    return `${amount.toLocaleString("fr-FR")} FCFA`;
+    return hideAmounts ? "•••••• FCFA" : `${formatAmount(amount)}`;
+  };
+
+  const formatSensitiveText = (text: string) => {
+    return hideAmounts ? "••••••" : text;
   };
 
   const formatDate = (date: Date) => {
@@ -139,7 +144,7 @@ export default function TransactionDetailScreen() {
                 <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>
                   {isIncome ? "Expéditeur" : "Destinataire"}
                 </Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>{transaction.counterparty}</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>{formatSensitiveText(transaction.counterparty)}</Text>
               </View>
             </View>
 
@@ -151,7 +156,7 @@ export default function TransactionDetailScreen() {
                 <View style={styles.infoContent}>
                   <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Téléphone</Text>
                   <Text style={[styles.infoValue, { color: colors.text }]}>
-                    {transaction.counterpartyPhone}
+                    {formatSensitiveText(transaction.counterpartyPhone)}
                   </Text>
                 </View>
               </View>
@@ -237,7 +242,7 @@ export default function TransactionDetailScreen() {
               </View>
               <View style={styles.infoContent}>
                 <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>ID Transaction</Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>{transaction.transactionId}</Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>{formatSensitiveText(transaction.transactionId)}</Text>
               </View>
             </View>
 
@@ -248,7 +253,7 @@ export default function TransactionDetailScreen() {
                 </View>
                 <View style={styles.infoContent}>
                   <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Référence</Text>
-                  <Text style={[styles.infoValue, { color: colors.text }]}>{transaction.reference}</Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>{formatSensitiveText(transaction.reference)}</Text>
                 </View>
               </View>
             )}

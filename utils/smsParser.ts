@@ -165,7 +165,11 @@ function detectTransactionType(message: string): TransactionType | null {
 
   // 4. Transfert - Doit commencer par "Transfert"
   if (trimmedMessage.startsWith("transfert ")) {
-    // "Transfert ... a ..." = envoyé
+    // "Transfert effectue pour" = envoyé
+    if (lowerMessage.includes("transfert effectue pour")) {
+      return "transfer_sent";
+    }
+    // "Transfert ... a ...=" envoyé
     if (lowerMessage.includes(" a ")) {
       return "transfer_sent";
     }
