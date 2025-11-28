@@ -48,6 +48,12 @@ function extractBalance(text: string): number {
     return parseFloat(balanceMatch[1].replace(',', ''));
   }
 
+  // Format: Nouveau solde: 1382 FCFA
+  balanceMatch = text.match(/Nouveau solde:\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
+  if (balanceMatch) {
+    return parseFloat(balanceMatch[1].replace(',', ''));
+  }
+
   // Format GAB: SOLDE DISPO 48635
   balanceMatch = text.match(/SOLDE(?:\s+DISPO)?\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
   if (balanceMatch) {
@@ -72,6 +78,11 @@ function extractDate(text: string): Date | null {
 }
 
 function extractTransactionId(text: string): string | null {
+  // Format: ID de la transaction : 10974007799
+  const idMatchLong = text.match(/ID de la transaction\s*[:\s]\s*(\d+)/i);
+  if (idMatchLong) return idMatchLong[1];
+
+  // Format standard: ID: 123456
   const idMatch = text.match(/ID[:\s]*(\d+)/i);
   return idMatch ? idMatch[1] : null;
 }
@@ -91,6 +102,13 @@ function extractCounterparty(text: string, type: TransactionType): string {
     }
   }
 
+  // Cas spécifique: "Vous avez recu un transfert de 1000FCFA de MFS ORABANK DIS SP"
+  // On cherche le deuxième "de" qui précède le nom, jusqu'à la parenthèse ou un point
+  const transferMatch = text.match(/transfert de\s+\d+(?:[.,]\d+)?\s*(?:F|FCFA|XOF)?\s+de\s+([^(.]+)/i);
+  if (transferMatch) {
+    return transferMatch[1].trim();
+  }
+
   const patterns = [
     /(?:de|a|à)\s+([^(]+?)\s*\(/i,
     /(?:de|a|à)\s+([^(\d]+?)(?:\s+\d{4}-|\s+Frais:)/i,
@@ -101,7 +119,12 @@ function extractCounterparty(text: string, type: TransactionType): string {
   for (const pattern of patterns) {
     const match = text.match(pattern);
     if (match) {
-      return match[1].trim();
+      // Nettoyage supplémentaire si on a capturé "1000FCFA de ..." par erreur avec le pattern générique
+      const cleanMatch = match[1].trim();
+      if (cleanMatch.match(/^\d+(?:[.,]\d+)?\s*(?:F|FCFA|XOF)?\s+de\s+(.+)/i)) {
+        return cleanMatch.replace(/^\d+(?:[.,]\d+)?\s*(?:F|FCFA|XOF)?\s+de\s+/i, '');
+      }
+      return cleanMatch;
     }
   }
 

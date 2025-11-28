@@ -701,7 +701,7 @@ const styles = StyleSheet.create({
   filterOptionChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 16,
+    borderRadius: 8,
     borderWidth: 1,
   },
   filterOptionChipActive: {
