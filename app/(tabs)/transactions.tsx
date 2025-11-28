@@ -369,6 +369,75 @@ export default function TransactionsScreen() {
           {filteredTransactions.length !== 1 ? "s" : ""}
         </Text>
 
+        {/* Summary Compact Horizontal */}
+        {filteredTransactions.length > 0 && (
+          <View style={[styles.summaryCompact, { backgroundColor: colors.cardBackground }]}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.summaryScrollContent}
+            >
+              {(filterType === "all" ||
+                filterType === "transfer_received" ||
+                filterType === "deposit" ||
+                filterType === "uemoa_received") && (
+                  <View style={[styles.summaryBadge, { backgroundColor: `${colors.income}15`, borderColor: colors.income }]}>
+                    <Text style={[styles.summaryBadgeLabel, { color: colors.income }]}>↓ Reçu</Text>
+                    <Text style={[styles.summaryBadgeValue, { color: colors.income }]}>
+                      {formatCurrency(totals.totalReceived)}
+                    </Text>
+                  </View>
+                )}
+              {(filterType === "all" ||
+                filterType === "transfer_sent" ||
+                filterType === "withdrawal" ||
+                filterType === "payment" ||
+                filterType === "uemoa_sent") && (
+                  <View style={[styles.summaryBadge, { backgroundColor: `${colors.expense}15`, borderColor: colors.expense }]}>
+                    <Text style={[styles.summaryBadgeLabel, { color: colors.expense }]}>↑ Envoyé</Text>
+                    <Text style={[styles.summaryBadgeValue, { color: colors.expense }]}>
+                      {formatCurrency(totals.totalSent)}
+                    </Text>
+                  </View>
+                )}
+              {totals.totalFees > 0 && (
+                <View style={[styles.summaryBadge, { backgroundColor: `${colors.warning}15`, borderColor: colors.warning }]}>
+                  <Text style={[styles.summaryBadgeLabel, { color: colors.warning }]}>Frais</Text>
+                  <Text style={[styles.summaryBadgeValue, { color: colors.warning }]}>
+                    {formatCurrency(totals.totalFees)}
+                  </Text>
+                </View>
+              )}
+              {filterType === "all" && (
+                <View style={[
+                  styles.summaryBadge,
+                  styles.summaryBadgeNet,
+                  {
+                    backgroundColor: totals.netBalance >= 0 ? `${colors.income}20` : `${colors.expense}20`,
+                    borderColor: totals.netBalance >= 0 ? colors.income : colors.expense,
+                    borderWidth: 2,
+                  }
+                ]}>
+                  <Text style={[
+                    styles.summaryBadgeLabel,
+                    { color: totals.netBalance >= 0 ? colors.income : colors.expense }
+                  ]}>
+                    Solde Net
+                  </Text>
+                  <Text style={[
+                    styles.summaryBadgeValue,
+                    styles.summaryNetValue,
+                    { color: totals.netBalance >= 0 ? colors.income : colors.expense }
+                  ]}>
+                    {totals.netBalance >= 0 ? "+" : ""}
+                    {formatCurrency(Math.abs(totals.netBalance))}
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        )}
+
 
 
         <FlatList
@@ -557,6 +626,47 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  // Summary Compact Styles
+  summaryCompact: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 8,
+    paddingVertical: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  summaryScrollContent: {
+    paddingHorizontal: 12,
+    gap: 8,
+    alignItems: "center",
+  },
+  summaryBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    minWidth: 100,
+    alignItems: "center",
+  },
+  summaryBadgeNet: {
+    minWidth: 130,
+  },
+  summaryBadgeLabel: {
+    fontSize: 11,
+    fontWeight: "600" as const,
+    textTransform: "uppercase" as const,
+    marginBottom: 2,
+  },
+  summaryBadgeValue: {
+    fontSize: 14,
+    fontWeight: "700" as const,
+  },
+  summaryNetValue: {
+    fontSize: 15,
   },
   // Advanced Filters Styles
   advancedFiltersButtonContainer: {
