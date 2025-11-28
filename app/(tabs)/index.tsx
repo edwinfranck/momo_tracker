@@ -202,7 +202,7 @@ export default function DashboardScreen() {
             <View style={styles.statIconContainer}>
               <TrendingDown size={24} color={colors.expense} />
             </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Djè reçu</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Djai reçu</Text>
             <Text style={[styles.statValue, { color: colors.expense }]}>
               {formatCurrency(stats.totalReceived)}
             </Text>
@@ -212,7 +212,7 @@ export default function DashboardScreen() {
             <View style={styles.statIconContainer}>
               <TrendingUp size={24} color={colors.income} />
             </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Djè envoyé</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Djai envoyé</Text>
             <Text style={[styles.statValue, { color: colors.income }]}>
               {formatCurrency(stats.totalSent)}
             </Text>
